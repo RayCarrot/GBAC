@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32126.317
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GBAC", "GBAC.csproj", "{B7AD5EDA-D73B-4EE9-B75A-E58F6571D9AE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Binary", "Binary", "{526A0025-6F08-423F-9263-A735F2A5E952}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinarySerializer", "..\submodules\BinarySerializer\src\BinarySerializer.csproj", "{DFB46994-134B-4639-82AE-E4E91095B8C6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BinarySerializer.GBA", "..\submodules\BinarySerializer.GBA\src\BinarySerializer.GBA.csproj", "{3354EEB6-03D4-46EC-8A26-E6D795908057}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B7AD5EDA-D73B-4EE9-B75A-E58F6571D9AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7AD5EDA-D73B-4EE9-B75A-E58F6571D9AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7AD5EDA-D73B-4EE9-B75A-E58F6571D9AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7AD5EDA-D73B-4EE9-B75A-E58F6571D9AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFB46994-134B-4639-82AE-E4E91095B8C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFB46994-134B-4639-82AE-E4E91095B8C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFB46994-134B-4639-82AE-E4E91095B8C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFB46994-134B-4639-82AE-E4E91095B8C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3354EEB6-03D4-46EC-8A26-E6D795908057}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3354EEB6-03D4-46EC-8A26-E6D795908057}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3354EEB6-03D4-46EC-8A26-E6D795908057}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3354EEB6-03D4-46EC-8A26-E6D795908057}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DFB46994-134B-4639-82AE-E4E91095B8C6} = {526A0025-6F08-423F-9263-A735F2A5E952}
+		{3354EEB6-03D4-46EC-8A26-E6D795908057} = {526A0025-6F08-423F-9263-A735F2A5E952}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {86E73711-779D-430B-B111-7188FED80D96}
+	EndGlobalSection
+EndGlobal

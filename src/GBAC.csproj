@@ -1,0 +1,64 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  
+  <!-- Framework -->
+  <PropertyGroup>
+    <!-- The target framework. Can be changed to 'TargetFrameworks' for multiple outputs. -->
+    <TargetFramework>net472</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <LangVersion>10.0</LangVersion>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>true</Prefer32Bit>
+    <!-- Appears to be required when using framework earlier than net5 -->
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+  </PropertyGroup>
+
+  <!-- Assembly -->
+  <PropertyGroup>
+    <!-- If not set then it will auto-generate an assembly info file which conflicts with the one we have -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+
+    <!-- Info (some of these get ignored right now due to GenerateAssemblyInfo being false) -->
+    <RootNamespace>GBAC</RootNamespace>
+    <AssemblyName>GBAC</AssemblyName>
+    <Version>1.0.0.0</Version>
+    <Authors>RayCarrot</Authors>
+    <Product>GBAC</Product>
+  </PropertyGroup>
+  
+  <!-- Fody (Debug) -->
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <WeaverConfiguration>
+      <Weavers>
+        <PropertyChanged />
+      </Weavers>
+    </WeaverConfiguration>
+  </PropertyGroup>
+  
+  <!-- Fody (Release) -->
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <WeaverConfiguration>
+      <Weavers>
+        <Costura IncludeDebugSymbols="false" ExcludeAssemblies="Magick.Native-Q8-x86" />
+        <PropertyChanged />
+      </Weavers>
+    </WeaverConfiguration>
+  </PropertyGroup>
+
+  <!-- Package references -->
+  <ItemGroup>
+    <PackageReference Include="Costura.Fody" Version="5.7.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="PropertyChanged.Fody" Version="3.4.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <!-- Project references -->
+  <ItemGroup>
+    <ProjectReference Include="..\submodules\BinarySerializer.GBA\src\BinarySerializer.GBA.csproj" />
+    <ProjectReference Include="..\submodules\BinarySerializer\src\BinarySerializer.csproj" />
+  </ItemGroup>
+
+</Project>
