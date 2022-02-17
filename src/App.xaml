@@ -1,9 +1,31 @@
 ﻿<Application x:Class="GBAC.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:GBAC"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+
+                <!-- Metro -->
+
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Purple.xaml" />
+
+                <!-- Local -->
+
+                <ResourceDictionary Source="UI/Resources/Resources.Margins.xaml" />
+                <ResourceDictionary Source="UI/Resources/Styles.Button.xaml" />
+                <ResourceDictionary Source="UI/Resources/Styles.ItemsControl.xaml" />
+                <ResourceDictionary Source="UI/Resources/Styles.NumericUpDown.xaml" />
+                <ResourceDictionary Source="UI/Resources/Styles.ScrollViewer.xaml" />
+                <ResourceDictionary Source="UI/Resources/Styles.TextBlock.xaml" />
+                <ResourceDictionary Source="UI/Resources/Theme.RoundedCorners.xaml" />
+
+            </ResourceDictionary.MergedDictionaries>
+
+        </ResourceDictionary>
+
     </Application.Resources>
 </Application>

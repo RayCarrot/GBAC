@@ -1,0 +1,239 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Data;
+using System.Windows.Input;
+using BinarySerializer.GBA;
+
+namespace GBAC;
+
+public class MainWindowViewModel : BaseViewModel
+{
+    #region Constructor
+
+    public MainWindowViewModel()
+    {
+        Message = new MessageService();
+        Browse = new BrowseService();
+
+        FileOffset = GBAConstants.Address_ROM;
+
+        CompressionTypes = new CompressionViewModel[]
+        {
+            new CompressionViewModel("LZSS", new GBA_LZSSEncoder(), 0x10),
+            new CompressionViewModel("Huffman", new GBA_HuffmanEncoder(), 0x24, 0x28),
+            new CompressionViewModel("RLE", new GBA_RLEEncoder(), 0x30),
+        };
+        CompressedData = new ObservableCollection<CompressedDataViewModel>();
+
+        BindingOperations.EnableCollectionSynchronization(CompressedData, CompressedData);
+
+        BrowseFileCommand = new RelayCommand(BrowseFile);
+        LoadFileCommand = new RelayCommand(LoadFile);
+        UnloadFileCommand = new RelayCommand(UnloadFile);
+        SearchCommand = new AsyncRelayCommand(SearchAsync);
+        StopSearchCommand = new RelayCommand(StopSearch);
+
+        SetTitle();
+    }
+
+    #endregion
+
+    #region Services
+
+    public MessageService Message { get; }
+    public BrowseService Browse { get; }
+
+    #endregion
+
+    #region Commands
+
+    public ICommand BrowseFileCommand { get; }
+    public ICommand LoadFileCommand { get; }
+    public ICommand UnloadFileCommand { get; }
+    public ICommand SearchCommand { get; }
+    public ICommand StopSearchCommand { get; }
+
+    #endregion
+
+    #region Private Fields
+
+    private readonly HashSet<uint> _foundDataOffsets = new(); // Local file offsets
+
+    #endregion
+
+    #region Public Properties
+
+    // Window
+    public string Title { get; set; }
+
+    // File
+    public string? FilePath { get; set; }
+    public string FileOffsetString
+    {
+        get => $"{FileOffset:X8}";
+        set
+        {
+            try
+            {
+                FileOffset = Convert.ToUInt32(value, 16);
+            }
+            catch
+            {
+                FileOffset = 0;
+            }
+        }
+    }
+    public uint FileOffset { get; set; }
+
+    // Data
+    public byte[]? FileData { get; set; }
+    public bool IsLoaded => FileData != null;
+
+    // Search
+    public bool IsSearching { get; set; }
+    public double SearchProgress { get; set; }
+    public double SearchProgressMax { get; set; }
+    public bool CancelSearch { get; set; }
+
+    // Compression
+    public CompressionViewModel[] CompressionTypes { get; }
+    public ObservableCollection<CompressedDataViewModel> CompressedData { get; }
+
+    #endregion
+
+    #region Public Methods
+
+    public void BrowseFile()
+    {
+        string? filePath = Browse.BrowseFile("Select the game file");
+
+        if (filePath == null)
+            return;
+
+        FilePath = filePath;
+    }
+
+    public void LoadFile()
+    {
+        UnloadFile();
+
+        try
+        {
+            FileData = File.ReadAllBytes(FilePath ?? String.Empty);
+            SetTitle(Path.GetFileName(FilePath));
+        }
+        catch (Exception ex)
+        {
+            Message.DisplayEception(ex, "An error occurred when loading the file");
+        }
+    }
+
+    public void UnloadFile()
+    {
+        if (IsSearching)
+            throw new Exception("Can't unload file while searching for data");
+
+        FileData = null;
+        CompressedData.Clear();
+        _foundDataOffsets.Clear();
+        SetTitle();
+    }
+
+    public async Task SearchAsync()
+    {
+        if (FileData == null || IsSearching)
+            return;
+
+        IsSearching = true;
+        CancelSearch = false;
+
+        try
+        {
+            SearchProgress = 0;
+
+            // TODO: Allow these to be specified
+            const int minDecompSize = 0x10;
+            const int maxDecompSize = 0xFFFF;
+            const int align = 1;
+
+            int max = FileData.Length - 4;
+            SearchProgressMax = max;
+
+            await Task.Run(() =>
+            {
+                using MemoryStream stream = new(FileData);
+
+                for (uint i = 0; i < max; i += 4)
+                {
+                    SearchProgress = i;
+
+                    if (CancelSearch)
+                        break;
+
+                    if (_foundDataOffsets.Contains(i))
+                        continue;
+
+                    uint size = ((uint)FileData[i + 3] << 16) | ((uint)FileData[i + 2] << 8) | FileData[i + 1];
+
+                    if (size is > maxDecompSize or < minDecompSize)
+                        continue;
+
+                    if (align > 1 && size % align != 0)
+                        continue;
+
+                    foreach (CompressionViewModel c in CompressionTypes)
+                    {
+                        if (!c.ValidHeaders.Contains(FileData[i]))
+                            continue;
+
+                        stream.Position = i;
+
+                        // TODO: Rather than using a memory stream we can create a dummy stream which only tracks the position
+                        using MemoryStream outStream = new();
+
+                        try
+                        {
+                            c.Encoder.DecodeStream(stream, outStream);
+                        }
+                        catch
+                        {
+                            continue;
+                        }
+
+                        if (outStream.Length != size)
+                            continue;
+
+                        CompressedData.Add(new CompressedDataViewModel(c, FileOffset + i, stream.Position - i, outStream.Length));
+                        _foundDataOffsets.Add(i);
+                        break;
+                    }
+                }
+            });
+        }
+        finally
+        {
+            IsSearching = false;
+        }
+    }
+
+    public void StopSearch()
+    {
+        CancelSearch = true;
+    }
+
+    [MemberNotNull(nameof(Title))]
+    public void SetTitle(string? subTitle = null)
+    {
+        Title = "GBAC 1.0.0.0";
+
+        if (subTitle != null)
+            Title += $" - {subTitle}";
+    }
+
+    #endregion
+}
