@@ -1,0 +1,6 @@
+[submodule "submodules/BinarySerializer"]
+	path = submodules/BinarySerializer
+	url = https://github.com/BinarySerializer/BinarySerializer
+[submodule "submodules/BinarySerializer.GBA"]
+	path = submodules/BinarySerializer.GBA
+	url = https://github.com/BinarySerializer/BinarySerializer.GBA
