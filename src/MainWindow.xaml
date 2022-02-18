@@ -97,6 +97,7 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <!-- TODO: Add search options -->
@@ -113,19 +114,28 @@
                         ContentTemplate="{StaticResource Button.IconContentTemplate}"
                         local:ButtonAssist.IconKind="StopCircleOutline"
                         Visibility="{Binding Path=IsSearching, Converter={local:BooleanToVisibilityConverter}}"
-                        Command="{Binding Path=StopSearchCommand, Mode=OneTime}"/>
+                        Command="{Binding Path=StopSearchCommand, Mode=OneTime}"
+                        Margin="{StaticResource Thickness.Horizontal.Large}"/>
 
                 <Button Grid.Column="3"
-                        Content="Unload File" 
+                        Content="Clear" 
                         ContentTemplate="{StaticResource Button.IconContentTemplate}"
                         local:ButtonAssist.IconKind="Cancel"
+                        Visibility="{Binding Path=IsSearching, Converter={local:InvertedBooleanToVisibilityConverter}}"
+                        Command="{Binding Path=ClearDataCommand, Mode=OneTime}"
+                        Margin="{StaticResource Thickness.Horizontal.Large}"/>
+
+                <Button Grid.Column="4"
+                        Content="Unload File" 
+                        ContentTemplate="{StaticResource Button.IconContentTemplate}"
+                        local:ButtonAssist.IconKind="close"
                         Visibility="{Binding Path=IsSearching, Converter={local:InvertedBooleanToVisibilityConverter}}"
                         Command="{Binding Path=UnloadFileCommand, Mode=OneTime}"/>
 
             </Grid>
 
             <mah:MetroProgressBar Grid.Row="1"
-                                  Visibility="{Binding Path=IsSearching, Converter={local:BooleanToVisibilityConverter}}"
+                                  Visibility="{Binding Path=IsSearching, Converter={local:BooleanToVisibilityHiddenConverter}}"
                                   Value="{Binding Path=SearchProgress}"
                                   Maximum="{Binding Path=SearchProgressMax}"
                                   Margin="{StaticResource Thickness.Vertical.Large}"/>

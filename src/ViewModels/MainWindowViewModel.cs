@@ -37,6 +37,7 @@ public class MainWindowViewModel : BaseViewModel
         UnloadFileCommand = new RelayCommand(UnloadFile);
         SearchCommand = new AsyncRelayCommand(SearchAsync);
         StopSearchCommand = new RelayCommand(StopSearch);
+        ClearDataCommand = new RelayCommand(ClearData);
 
         SetTitle();
     }
@@ -57,6 +58,7 @@ public class MainWindowViewModel : BaseViewModel
     public ICommand UnloadFileCommand { get; }
     public ICommand SearchCommand { get; }
     public ICommand StopSearchCommand { get; }
+    public ICommand ClearDataCommand { get; }
 
     #endregion
 
@@ -139,8 +141,7 @@ public class MainWindowViewModel : BaseViewModel
             throw new Exception("Can't unload file while searching for data");
 
         FileData = null;
-        CompressedData.Clear();
-        _foundDataOffsets.Clear();
+        ClearData();
         SetTitle();
     }
 
@@ -224,6 +225,15 @@ public class MainWindowViewModel : BaseViewModel
     public void StopSearch()
     {
         CancelSearch = true;
+    }
+
+    public void ClearData()
+    {
+        if (IsSearching)
+            throw new Exception("Can't clear data while searching for data");
+
+        CompressedData.Clear();
+        _foundDataOffsets.Clear();
     }
 
     [MemberNotNull(nameof(Title))]
