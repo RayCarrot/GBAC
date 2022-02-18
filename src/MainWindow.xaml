@@ -67,7 +67,7 @@
             <TextBox Grid.Row="1" Grid.Column="2"
                      HorizontalAlignment="Left" 
                      MinWidth="100"
-                     Text="{Binding Path=FileOffsetString}"
+                     Text="{Binding Path=FileOffset, Converter={local:UintToHexStringConverter}}"
                      Margin="{StaticResource Thickness.Vertical.Large}"/>
 
             <Button Grid.Row="2" Grid.Column="0"
@@ -167,6 +167,26 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
+
+                <TextBlock Style="{StaticResource TextBlock.Header}" 
+                           Text="Data Range" 
+                           Margin="{StaticResource Thickness.Vertical.Small}"/>
+
+                <StackPanel Orientation="Horizontal"
+                            Margin="{StaticResource Thickness.Vertical.Large}">
+
+                    <TextBox MinWidth="100"
+                             Text="{Binding Path=MinSearchOffset, Converter={local:UintToHexStringConverter}}"
+                             Margin="{StaticResource Thickness.Horizontal.Small}"/>
+
+                    <TextBlock Text=" - "
+                               VerticalAlignment="Center"
+                               Margin="{StaticResource Thickness.Horizontal.Small}"/>
+
+                    <TextBox MinWidth="100"
+                             Text="{Binding Path=MaxSearchOffset, Converter={local:UintToHexStringConverter}}"/>
+
+                </StackPanel>
 
                 <Separator />
 

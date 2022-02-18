@@ -9,7 +9,6 @@ public class CompressionViewModel : BaseViewModel
         DisplayName = displayName;
         Encoder = encoder;
         ValidHeaders = validHeaders;
-        IncludeInSearch = true;
     }
 
     public string DisplayName { get; }

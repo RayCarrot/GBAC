@@ -75,21 +75,6 @@ public class MainWindowViewModel : BaseViewModel
 
     // File
     public string? FilePath { get; set; }
-    public string FileOffsetString
-    {
-        get => $"{FileOffset:X8}";
-        set
-        {
-            try
-            {
-                FileOffset = Convert.ToUInt32(value, 16);
-            }
-            catch
-            {
-                FileOffset = 0;
-            }
-        }
-    }
     public uint FileOffset { get; set; }
 
     // Data
@@ -101,6 +86,10 @@ public class MainWindowViewModel : BaseViewModel
     public double SearchProgress { get; set; }
     public double SearchProgressMax { get; set; }
     public bool CancelSearch { get; set; }
+
+    // Search Options
+    public uint MinSearchOffset { get; set; }
+    public uint MaxSearchOffset { get; set; }
 
     // Compression
     public CompressionViewModel[] CompressionTypes { get; }
@@ -128,6 +117,12 @@ public class MainWindowViewModel : BaseViewModel
         {
             FileData = File.ReadAllBytes(FilePath ?? String.Empty);
             SetTitle(Path.GetFileName(FilePath));
+
+            MinSearchOffset = FileOffset;
+            MaxSearchOffset = (uint)(FileOffset + FileData.Length);
+
+            foreach (CompressionViewModel c in CompressionTypes)
+                c.IncludeInSearch = true;
         }
         catch (Exception ex)
         {
@@ -150,6 +145,12 @@ public class MainWindowViewModel : BaseViewModel
         if (FileData == null || IsSearching)
             return;
 
+        if (MinSearchOffset < FileOffset || MaxSearchOffset > FileOffset + FileData.Length)
+        {
+            Message.DisplayMessage("The range is invalid! Must be within the file.", "Invalid range");
+            return;
+        }
+
         IsSearching = true;
         CancelSearch = false;
 
@@ -162,7 +163,7 @@ public class MainWindowViewModel : BaseViewModel
             const int maxDecompSize = 0xFFFF;
             const int align = 1;
 
-            int max = FileData.Length - 4;
+            uint max = MaxSearchOffset - FileOffset - 4;
             SearchProgressMax = max;
 
             await Task.Run(() =>
@@ -171,7 +172,7 @@ public class MainWindowViewModel : BaseViewModel
 
                 CompressionViewModel[] compressionTypes = CompressionTypes.Where(x => x.IncludeInSearch).ToArray();
 
-                for (uint i = 0; i < max; i += 4)
+                for (uint i = MinSearchOffset - FileOffset; i < max; i += 4)
                 {
                     SearchProgress = i;
 
