@@ -65,6 +65,7 @@ public class MainWindowViewModel : BaseViewModel
     #region Private Fields
 
     private readonly HashSet<uint> _foundDataOffsets = new(); // Local file offsets
+    private CompressedDataProvider? _dataCache;
 
     #endregion
 
@@ -97,6 +98,7 @@ public class MainWindowViewModel : BaseViewModel
     // Compression
     public CompressionViewModel[] CompressionTypes { get; }
     public ObservableCollection<CompressedDataViewModel> CompressedData { get; }
+    public CompressedDataViewModel? SelectedData { get; set; }
 
     #endregion
 
@@ -119,6 +121,8 @@ public class MainWindowViewModel : BaseViewModel
         try
         {
             FileData = File.ReadAllBytes(FilePath ?? String.Empty);
+            _dataCache = new CompressedDataProvider(FileData, FileOffset);
+
             SetTitle(Path.GetFileName(FilePath));
 
             MinSearchOffset = FileOffset;
@@ -143,13 +147,14 @@ public class MainWindowViewModel : BaseViewModel
             throw new Exception("Can't unload file while searching for data");
 
         FileData = null;
+        _dataCache = null;
         ClearData();
         SetTitle();
     }
 
     public async Task SearchAsync()
     {
-        if (FileData == null || IsSearching)
+        if (FileData == null || _dataCache == null || IsSearching)
             return;
 
         if (MinSearchOffset < FileOffset || MaxSearchOffset > FileOffset + FileData.Length)
@@ -214,7 +219,7 @@ public class MainWindowViewModel : BaseViewModel
                         if (outStream.Length != size)
                             continue;
 
-                        CompressedData.Add(new CompressedDataViewModel(c, FileOffset + i, (uint)(stream.Position - i), (uint)outStream.Length));
+                        CompressedData.Add(new CompressedDataViewModel(_dataCache, c, FileOffset + i, (uint)(stream.Position - i), (uint)outStream.Length));
                         _foundDataOffsets.Add(i);
                         break;
                     }
@@ -238,6 +243,8 @@ public class MainWindowViewModel : BaseViewModel
             throw new Exception("Can't clear data while searching for data");
 
         CompressedData.Clear();
+        SelectedData?.Unload();
+        SelectedData = null;
         _foundDataOffsets.Clear();
     }
 

@@ -18,7 +18,6 @@
                 <ResourceDictionary Source="UI/Resources/Resources.Margins.xaml" />
                 <ResourceDictionary Source="UI/Resources/Styles.Button.xaml" />
                 <ResourceDictionary Source="UI/Resources/Styles.ItemsControl.xaml" />
-                <ResourceDictionary Source="UI/Resources/Styles.NumericUpDown.xaml" />
                 <ResourceDictionary Source="UI/Resources/Styles.ScrollViewer.xaml" />
                 <ResourceDictionary Source="UI/Resources/Styles.TextBlock.xaml" />
                 <ResourceDictionary Source="UI/Resources/Styles.ToolTip.xaml" />

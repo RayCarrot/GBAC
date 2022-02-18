@@ -110,13 +110,7 @@
                         Command="{Binding Path=SearchCommand, Mode=OneTime}"
                         Margin="{StaticResource Thickness.Horizontal.Large}"/>
 
-                <mah:ToggleSwitch x:Name="AdvancedOptionsSwitch"
-                                  Grid.Column="1" 
-                                  Visibility="{Binding Path=IsSearching, Converter={local:InvertedBooleanToVisibilityConverter}}"
-                                  Content="Show Advanced Options"
-                                  Margin="{StaticResource Thickness.Horizontal.Large}" />
-
-                <Button Grid.Column="2"
+                <Button Grid.Column="1"
                         Content="Stop" 
                         ToolTip="Stops the current search"
                         ContentTemplate="{StaticResource Button.IconContentTemplate}"
@@ -124,6 +118,13 @@
                         Visibility="{Binding Path=IsSearching, Converter={local:BooleanToVisibilityConverter}}"
                         Command="{Binding Path=StopSearchCommand, Mode=OneTime}"
                         Margin="{StaticResource Thickness.Horizontal.Large}"/>
+
+                <mah:ToggleSwitch x:Name="AdvancedOptionsSwitch"
+                                  Grid.Column="2" 
+                                  IsOn="True"
+                                  Content="Advanced"
+                                  ToolTip="Shows advanced search options"
+                                  Margin="{StaticResource Thickness.Horizontal.Large}" />
 
                 <Button Grid.Column="4"
                         Content="Clear" 
@@ -242,6 +243,9 @@
                           CanUserReorderColumns="False"
                           CanUserResizeRows="False"
                           CanUserSortColumns="True"
+                          SelectionMode="Single"
+                          SelectionChanged="DataGrid_OnSelectionChanged"
+                          SelectedItem="{Binding Path=SelectedData}"
                           ItemsSource="{Binding Path=CompressedData, Mode=OneTime}">
 
                     <DataGrid.Columns>
@@ -279,9 +283,180 @@
 
                 </DataGrid>
 
-            </Grid>
+                <ScrollViewer Grid.Column="1"
+                              DataContext="{Binding Path=SelectedData}"
+                              Visibility="{Binding Converter={local:InvertedObjectNullToVisibilityConverter}}">
 
-            <!-- TODO: When selecting data entry have palette, sprite & bitmap previews -->
+                    <StackPanel>
+
+                        <!-- Header -->
+                        <TextBlock Style="{StaticResource TextBlock.HeaderLarge}"
+                                   Text="{Binding Path=Offset, Converter={local:UintToHexStringConverter}, ConverterParameter=8, Mode=OneTime}"
+                                   HorizontalAlignment="Left" 
+                                   Margin="{StaticResource Thickness.Vertical.Large}"/>
+
+                        <!-- Raw & Palette -->
+                        <WrapPanel>
+
+                            <StackPanel Margin="{StaticResource Thickness.Horizontal.Largest}">
+
+                                <TextBlock Style="{StaticResource TextBlock.Header}"
+                                           Text="Raw Data"
+                                           Margin="{StaticResource Thickness.Vertical.Small}"/>
+
+                                <StackPanel Orientation="Horizontal"
+                                            Margin="{StaticResource Thickness.Vertical.Small}">
+
+                                    <!-- TODO: Implement -->
+                                    <Button Content="Copy to Clipboard" 
+                                            ContentTemplate="{StaticResource Button.IconContentTemplate}"
+                                            local:ButtonAssist.IconKind="ClipboardOutline"
+                                            Command="{Binding Path=CopyDataCommand, Mode=OneTime}"
+                                            Margin="{StaticResource Thickness.Horizontal.Large}"/>
+
+                                    <!-- TODO: Implement -->
+                                    <Button Content="Export" 
+                                            ContentTemplate="{StaticResource Button.IconContentTemplate}"
+                                            local:ButtonAssist.IconKind="FileExportOutline"
+                                            Command="{Binding Path=ExportDataCommand, Mode=OneTime}"
+                                            Margin="{StaticResource Thickness.Horizontal.Small}"/>
+
+                                    <!-- TODO: Implement -->
+                                    <Button Content="Import" 
+                                            ContentTemplate="{StaticResource Button.IconContentTemplate}"
+                                            local:ButtonAssist.IconKind="FileImportOutline"
+                                            Command="{Binding Path=ImportDataCommand, Mode=OneTime}"
+                                            Margin="{StaticResource Thickness.Horizontal.Large}"/>
+
+                                </StackPanel>
+
+                                <TextBlock Text="{Binding Path=DataString}"
+                                           FontFamily="Consolas"
+                                           Margin="{StaticResource Thickness.Vertical.Large}"/>
+
+                            </StackPanel>
+
+                            <StackPanel Margin="{StaticResource Thickness.Horizontal.Largest}">
+
+                                <TextBlock Style="{StaticResource TextBlock.Header}"
+                                           Text="Palette"
+                                           Margin="{StaticResource Thickness.Vertical.Small}"/>
+
+                                <Image Source="{Binding Path=PalettePreview}"
+                                       Width="256"
+                                       HorizontalAlignment="Left"
+                                       RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                       Margin="{StaticResource Thickness.Vertical.Large}" />
+
+                            </StackPanel>
+
+                        </WrapPanel>
+
+                        <Separator Margin="{StaticResource Thickness.Vertical.Large}" />
+
+                        <!-- Tiles -->
+                        <TextBlock Style="{StaticResource TextBlock.Header}"
+                                   Text="Tiles"
+                                   Margin="{StaticResource Thickness.Vertical.Small}"/>
+
+                        <mah:NumericUpDown Minimum="0"
+                                           Maximum="64"
+                                           Value="{Binding Path=TilesPreviewTileWidth}"
+                                           Margin="{StaticResource Thickness.Vertical.Small}"
+                                           HorizontalAlignment="Left"
+                                           MinWidth="70"
+                                           ValueChanged="TilePreviewWidthNumericUpDown_OnValueChanged"/>
+
+                        <ScrollViewer MaxHeight="300" 
+                                      HorizontalAlignment="Left">
+                            <WrapPanel>
+
+                                <StackPanel Margin="{StaticResource Thickness.Horizontal.Largest}">
+
+                                    <TextBlock Style="{StaticResource TextBlock.HeaderSmall}"
+                                               Text="4bpp"
+                                               Margin="{StaticResource Thickness.Vertical.Small}"/>
+
+                                    <Image Source="{Binding Path=Tiles4Preview}"
+                                           Width="{Binding Path=TilesPreviewWidth, Converter={local:MultipleIntConverter}, ConverterParameter=2}"
+                                           HorizontalAlignment="Left"
+                                           RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                           Margin="{StaticResource Thickness.Vertical.Large}" />
+
+                                </StackPanel>
+
+                                <StackPanel Margin="{StaticResource Thickness.Horizontal.Largest}">
+
+                                    <TextBlock Style="{StaticResource TextBlock.HeaderSmall}"
+                                               Text="8bpp"
+                                               Margin="{StaticResource Thickness.Vertical.Small}"/>
+
+                                    <Image Source="{Binding Path=Tiles8Preview}"
+                                           Width="{Binding Path=TilesPreviewWidth, Converter={local:MultipleIntConverter}, ConverterParameter=2}"
+                                           HorizontalAlignment="Left"
+                                           RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                           Margin="{StaticResource Thickness.Vertical.Large}" />
+
+                                </StackPanel>
+
+                            </WrapPanel>
+                        </ScrollViewer>
+
+                        <Separator Margin="{StaticResource Thickness.Vertical.Large}" />
+
+                        <!-- Map -->
+                        <TextBlock Style="{StaticResource TextBlock.Header}"
+                                   Text="Map"
+                                   Margin="{StaticResource Thickness.Vertical.Small}"/>
+
+                        <mah:NumericUpDown Minimum="0"
+                                           Maximum="2048"
+                                           Value="{Binding Path=MapPreviewWidth}"
+                                           Margin="{StaticResource Thickness.Vertical.Small}"
+                                           HorizontalAlignment="Left"
+                                           MinWidth="70"
+                                           ValueChanged="MapPreviewWidthNumericUpDown_OnValueChanged"/>
+
+                        <ScrollViewer MaxHeight="300" 
+                                      HorizontalAlignment="Left">
+                            <WrapPanel>
+
+                                <StackPanel Margin="{StaticResource Thickness.Horizontal.Largest}">
+
+                                    <TextBlock Style="{StaticResource TextBlock.HeaderSmall}"
+                                               Text="8bpp"
+                                               Margin="{StaticResource Thickness.Vertical.Small}"/>
+
+                                    <Image Source="{Binding Path=Map8Preview}"
+                                           Width="{Binding Path=MapPreviewWidth, Converter={local:MultipleIntConverter}, ConverterParameter=2}"
+                                           HorizontalAlignment="Left"
+                                           RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                           Margin="{StaticResource Thickness.Vertical.Large}" />
+
+                                </StackPanel>
+
+                                <StackPanel Margin="{StaticResource Thickness.Horizontal.Largest}">
+
+                                    <TextBlock Style="{StaticResource TextBlock.HeaderSmall}"
+                                               Text="16bpp"
+                                               Margin="{StaticResource Thickness.Vertical.Small}"/>
+
+                                    <Image Source="{Binding Path=Map16Preview}"
+                                           Width="{Binding Path=MapPreviewWidth, Converter={local:MultipleIntConverter}, ConverterParameter=2}"
+                                           HorizontalAlignment="Left"
+                                           RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                           Margin="{StaticResource Thickness.Vertical.Large}" />
+
+                                </StackPanel>
+
+                            </WrapPanel>
+                        </ScrollViewer>
+
+                    </StackPanel>
+
+                </ScrollViewer>
+
+            </Grid>
 
         </Grid>
 
