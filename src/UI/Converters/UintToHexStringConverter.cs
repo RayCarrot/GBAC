@@ -7,7 +7,7 @@ public class UintToHexStringConverter : BaseValueConverter<UintToHexStringConver
 {
     public override object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        return $"{(uint)value!:X8}";
+        return ((uint)value!).ToString("X" + parameter);
     }
 
     public override object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

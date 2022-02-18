@@ -67,7 +67,7 @@
             <TextBox Grid.Row="1" Grid.Column="2"
                      HorizontalAlignment="Left" 
                      MinWidth="100"
-                     Text="{Binding Path=FileOffset, Converter={local:UintToHexStringConverter}}"
+                     Text="{Binding Path=FileOffset, Converter={local:UintToHexStringConverter}, ConverterParameter=8}"
                      Margin="{StaticResource Thickness.Vertical.Large}"/>
 
             <Button Grid.Row="2" Grid.Column="0"
@@ -112,7 +112,7 @@
                 <mah:ToggleSwitch x:Name="AdvancedOptionsSwitch"
                                   Grid.Column="1" 
                                   Visibility="{Binding Path=IsSearching, Converter={local:InvertedBooleanToVisibilityConverter}}"
-                                  Content="Advanced Options"
+                                  Content="Show Advanced Options"
                                   Margin="{StaticResource Thickness.Horizontal.Large}" />
 
                 <Button Grid.Column="2"
@@ -174,7 +174,7 @@
                             Margin="{StaticResource Thickness.Vertical.Large}">
 
                     <TextBox MinWidth="100"
-                             Text="{Binding Path=MinSearchOffset, Converter={local:UintToHexStringConverter}}"
+                             Text="{Binding Path=MinSearchOffset, Converter={local:UintToHexStringConverter}, ConverterParameter=8}"
                              Margin="{StaticResource Thickness.Horizontal.Small}"/>
 
                     <TextBlock Text=" - "
@@ -182,7 +182,7 @@
                                Margin="{StaticResource Thickness.Horizontal.Small}"/>
 
                     <TextBox MinWidth="100"
-                             Text="{Binding Path=MaxSearchOffset, Converter={local:UintToHexStringConverter}}"/>
+                             Text="{Binding Path=MaxSearchOffset, Converter={local:UintToHexStringConverter}, ConverterParameter=8}"/>
 
                 </StackPanel>
 
@@ -246,7 +246,7 @@
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
                         <DataGridTextColumn IsReadOnly="True"
-                                            Binding="{Binding Path=CompressedLength, Mode=OneTime}">
+                                            Binding="{Binding Path=CompressedLength, Mode=OneTime, Converter={local:UintToHexStringConverter}}">
                             <DataGridTextColumn.Header>
                                 <TextBlock>
                                     Compressed<LineBreak/>
@@ -255,7 +255,7 @@
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
                         <DataGridTextColumn IsReadOnly="True"
-                                            Binding="{Binding Path=DecompressedLength, Mode=OneTime}">
+                                            Binding="{Binding Path=DecompressedLength, Mode=OneTime, Converter={local:UintToHexStringConverter}}">
                             <DataGridTextColumn.Header>
                                 <TextBlock>
                                     Decompressed<LineBreak/>

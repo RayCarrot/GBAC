@@ -2,7 +2,7 @@
 
 public class CompressedDataViewModel : BaseViewModel
 {
-    public CompressedDataViewModel(CompressionViewModel compression, uint offset, long compressedLength, long decompressedLength)
+    public CompressedDataViewModel(CompressionViewModel compression, uint offset, uint compressedLength, uint decompressedLength)
     {
         Compression = compression;
         Offset = offset;
@@ -12,6 +12,6 @@ public class CompressedDataViewModel : BaseViewModel
 
     public CompressionViewModel Compression { get; }
     public uint Offset { get; }
-    public long CompressedLength { get; }
-    public long DecompressedLength { get; }
+    public uint CompressedLength { get; }
+    public uint DecompressedLength { get; }
 }

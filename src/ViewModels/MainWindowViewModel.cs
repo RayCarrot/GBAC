@@ -215,7 +215,7 @@ public class MainWindowViewModel : BaseViewModel
                         if (outStream.Length != size)
                             continue;
 
-                        CompressedData.Add(new CompressedDataViewModel(c, FileOffset + i, stream.Position - i, outStream.Length));
+                        CompressedData.Add(new CompressedDataViewModel(c, FileOffset + i, (uint)(stream.Position - i), (uint)outStream.Length));
                         _foundDataOffsets.Add(i);
                         break;
                     }
