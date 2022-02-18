@@ -102,8 +102,6 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <!-- TODO: Add search options -->
-
                 <Button Grid.Column="0"
                         Content="Search" 
                         ContentTemplate="{StaticResource Button.IconContentTemplate}"
@@ -185,6 +183,26 @@
 
                     <TextBox MinWidth="100"
                              Text="{Binding Path=MaxSearchOffset, Converter={local:UintToHexStringConverter}}"/>
+
+                </StackPanel>
+
+                <TextBlock Style="{StaticResource TextBlock.Header}" 
+                           Text="Decompressed Size" 
+                           Margin="{StaticResource Thickness.Vertical.Small}"/>
+
+                <StackPanel Orientation="Horizontal"
+                            Margin="{StaticResource Thickness.Vertical.Large}">
+
+                    <TextBox MinWidth="100"
+                             Text="{Binding Path=MinDecompressedSize, Converter={local:UintToHexStringConverter}}"
+                             Margin="{StaticResource Thickness.Horizontal.Small}"/>
+
+                    <TextBlock Text=" - "
+                               VerticalAlignment="Center"
+                               Margin="{StaticResource Thickness.Horizontal.Small}"/>
+
+                    <TextBox MinWidth="100"
+                             Text="{Binding Path=MaxDecompressedSize, Converter={local:UintToHexStringConverter}}"/>
 
                 </StackPanel>
 
