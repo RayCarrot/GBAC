@@ -92,6 +92,7 @@ public class MainWindowViewModel : BaseViewModel
     public uint MaxSearchOffset { get; set; }
     public uint MinDecompressedSize { get; set; }
     public uint MaxDecompressedSize { get; set; }
+    public uint DecompressedDataAlign { get; set; }
 
     // Compression
     public CompressionViewModel[] CompressionTypes { get; }
@@ -125,6 +126,7 @@ public class MainWindowViewModel : BaseViewModel
 
             MinDecompressedSize = 0x10;
             MaxDecompressedSize = 0xFFFF;
+            DecompressedDataAlign = 1;
 
             foreach (CompressionViewModel c in CompressionTypes)
                 c.IncludeInSearch = true;
@@ -163,9 +165,6 @@ public class MainWindowViewModel : BaseViewModel
         {
             SearchProgress = 0;
 
-            // TODO: Allow this to be specified
-            const int align = 1;
-
             uint max = MaxSearchOffset - FileOffset - 4;
             SearchProgressMax = max;
 
@@ -190,7 +189,7 @@ public class MainWindowViewModel : BaseViewModel
                     if (size > MaxDecompressedSize || size < MinDecompressedSize)
                         continue;
 
-                    if (align > 1 && size % align != 0)
+                    if (DecompressedDataAlign > 1 && size % DecompressedDataAlign != 0)
                         continue;
 
                     foreach (CompressionViewModel c in compressionTypes)

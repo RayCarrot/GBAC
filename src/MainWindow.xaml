@@ -202,7 +202,15 @@
                                Margin="{StaticResource Thickness.Horizontal.Small}"/>
 
                     <TextBox MinWidth="100"
-                             Text="{Binding Path=MaxDecompressedSize, Converter={local:UintToHexStringConverter}}"/>
+                             Text="{Binding Path=MaxDecompressedSize, Converter={local:UintToHexStringConverter}}"
+                             Margin="{StaticResource Thickness.Horizontal.Large}"/> 
+
+                    <TextBlock Text="Align:"
+                               VerticalAlignment="Center"
+                               Margin="{StaticResource Thickness.Horizontal.Small}"/>
+
+                    <TextBox MinWidth="100"
+                             Text="{Binding Path=DecompressedDataAlign, Converter={local:UintToHexStringConverter}}"/>
 
                 </StackPanel>
 
