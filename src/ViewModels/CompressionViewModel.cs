@@ -9,9 +9,11 @@ public class CompressionViewModel : BaseViewModel
         DisplayName = displayName;
         Encoder = encoder;
         ValidHeaders = validHeaders;
+        IncludeInSearch = true;
     }
 
     public string DisplayName { get; }
     public GBA_Encoder Encoder { get; }
     public byte[] ValidHeaders { get; }
+    public bool IncludeInSearch { get; set; }
 }

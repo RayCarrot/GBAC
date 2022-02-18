@@ -169,6 +169,8 @@ public class MainWindowViewModel : BaseViewModel
             {
                 using MemoryStream stream = new(FileData);
 
+                CompressionViewModel[] compressionTypes = CompressionTypes.Where(x => x.IncludeInSearch).ToArray();
+
                 for (uint i = 0; i < max; i += 4)
                 {
                     SearchProgress = i;
@@ -187,7 +189,7 @@ public class MainWindowViewModel : BaseViewModel
                     if (align > 1 && size % align != 0)
                         continue;
 
-                    foreach (CompressionViewModel c in CompressionTypes)
+                    foreach (CompressionViewModel c in compressionTypes)
                     {
                         if (!c.ValidHeaders.Contains(FileData[i]))
                             continue;
