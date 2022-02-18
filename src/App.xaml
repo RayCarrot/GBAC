@@ -21,6 +21,7 @@
                 <ResourceDictionary Source="UI/Resources/Styles.NumericUpDown.xaml" />
                 <ResourceDictionary Source="UI/Resources/Styles.ScrollViewer.xaml" />
                 <ResourceDictionary Source="UI/Resources/Styles.TextBlock.xaml" />
+                <ResourceDictionary Source="UI/Resources/Styles.ToolTip.xaml" />
                 <ResourceDictionary Source="UI/Resources/Theme.RoundedCorners.xaml" />
 
             </ResourceDictionary.MergedDictionaries>

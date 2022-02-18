@@ -104,6 +104,7 @@
 
                 <Button Grid.Column="0"
                         Content="Search" 
+                        ToolTip="Searches the loaded file for compressed data. This will include a lot of garbage data as well, so it is recommended using the advanced options to filter the search."
                         ContentTemplate="{StaticResource Button.IconContentTemplate}"
                         local:ButtonAssist.IconKind="FileSearchOutline"
                         Command="{Binding Path=SearchCommand, Mode=OneTime}"
@@ -117,6 +118,7 @@
 
                 <Button Grid.Column="2"
                         Content="Stop" 
+                        ToolTip="Stops the current search"
                         ContentTemplate="{StaticResource Button.IconContentTemplate}"
                         local:ButtonAssist.IconKind="StopCircleOutline"
                         Visibility="{Binding Path=IsSearching, Converter={local:BooleanToVisibilityConverter}}"
@@ -125,6 +127,7 @@
 
                 <Button Grid.Column="4"
                         Content="Clear" 
+                        ToolTip="Clears the list of found compressed data"
                         ContentTemplate="{StaticResource Button.IconContentTemplate}"
                         local:ButtonAssist.IconKind="Cancel"
                         Visibility="{Binding Path=IsSearching, Converter={local:InvertedBooleanToVisibilityConverter}}"
@@ -133,6 +136,7 @@
 
                 <Button Grid.Column="5"
                         Content="Unload File" 
+                        ToolTip="Unloads the file and allows a new file to be loaded"
                         ContentTemplate="{StaticResource Button.IconContentTemplate}"
                         local:ButtonAssist.IconKind="close"
                         Visibility="{Binding Path=IsSearching, Converter={local:InvertedBooleanToVisibilityConverter}}"
