@@ -130,42 +130,58 @@
                                   Maximum="{Binding Path=SearchProgressMax}"
                                   Margin="{StaticResource Thickness.Vertical.Large}"/>
 
-            <ListBox Grid.Row="2"
-                     Grid.IsSharedSizeScope="True"
-                     BorderThickness="1"
-                     ItemsSource="{Binding Path=CompressedData, Mode=OneTime}">
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" SharedSizeGroup="A" />
-                                <ColumnDefinition Width="Auto" SharedSizeGroup="B" />
-                                <ColumnDefinition Width="Auto" SharedSizeGroup="C" />
-                                <ColumnDefinition Width="Auto" SharedSizeGroup="D" />
-                            </Grid.ColumnDefinitions>
+                <DataGrid Grid.Column="0"
+                          AutoGenerateColumns="False"
+                          CanUserResizeColumns="False"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          CanUserReorderColumns="False"
+                          CanUserResizeRows="False"
+                          CanUserSortColumns="True"
+                          ItemsSource="{Binding Path=CompressedData, Mode=OneTime}">
 
-                            <TextBlock Grid.Column="0"
-                                       Text="{Binding Path=Offset, Mode=OneTime, StringFormat=X8}"
-                                       Margin="{StaticResource Thickness.Horizontal.Largest}"/>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn IsReadOnly="True"
+                                            Binding="{Binding Path=Offset, Mode=OneTime, StringFormat=X8}">
+                            <DataGridTextColumn.Header>
+                                <TextBlock Text="Offset" />
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn IsReadOnly="True"
+                                            Binding="{Binding Path=Compression.DisplayName, Mode=OneTime}">
+                            <DataGridTextColumn.Header>
+                                <TextBlock Text="Compression" />
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn IsReadOnly="True"
+                                            Binding="{Binding Path=CompressedLength, Mode=OneTime}">
+                            <DataGridTextColumn.Header>
+                                <TextBlock>
+                                    Compressed<LineBreak/>
+                                    Length
+                                </TextBlock>
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn IsReadOnly="True"
+                                            Binding="{Binding Path=DecompressedLength, Mode=OneTime}">
+                            <DataGridTextColumn.Header>
+                                <TextBlock>
+                                    Decompressed<LineBreak/>
+                                    Length
+                                </TextBlock>
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
 
-                            <TextBlock Grid.Column="1"
-                                       Text="{Binding Path=Compression.DisplayName, Mode=OneTime}"
-                                       Margin="{StaticResource Thickness.Horizontal.Largest}"/>
+                </DataGrid>
 
-                            <TextBlock Grid.Column="2"
-                                       Text="{Binding Path=CompressedLength, Mode=OneTime}"
-                                       Margin="{StaticResource Thickness.Horizontal.Largest}"/>
-
-                            <TextBlock Grid.Column="3"
-                                       Text="{Binding Path=DecompressedLength, Mode=OneTime}"
-                                       Margin="{StaticResource Thickness.Horizontal.Largest}"/>
-
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-
-            </ListBox>
+            </Grid>
 
             <!-- TODO: When selecting data entry have palette, sprite & bitmap previews -->
 
