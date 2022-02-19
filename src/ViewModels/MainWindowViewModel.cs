@@ -229,7 +229,7 @@ public class MainWindowViewModel : BaseViewModel
         {
             SearchProgress = 0;
 
-            uint max = MaxSearchOffset - FileOffset - 4;
+            uint max = MaxSearchOffset - FileOffset;
             SearchProgressMax = max;
 
             await Task.Run(() =>
