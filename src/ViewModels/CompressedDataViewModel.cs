@@ -305,7 +305,7 @@ public class CompressedDataViewModel : BaseViewModel
             PixelFormat format = bpp switch
             {
                 8 => PixelFormats.Gray8,
-                16 => PixelFormats.Gray16,
+                16 => PixelFormats.Gray16, // TODO: Perhaps find a better solution to this. If values are too low this will only show black.
                 _ => throw new ArgumentOutOfRangeException(nameof(bpp), bpp, null)
             };
 

@@ -1,0 +1,15 @@
+﻿<UserControl x:Class="GBAC.InfoIcon"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"             
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:GBAC"
+             mc:Ignorable="d">
+    <iconPacks:PackIconMaterial x:Name="InfoIconRoot"
+                                ToolTip="{Binding Path=Text}"
+                                Kind="{Binding Path=IconKind, FallbackValue=HelpCircleOutline}"
+                                d:DataContext="{d:DesignInstance local:InfoIcon}"
+                                Background="Transparent" 
+                                ToolTipService.ShowDuration="1000000" />
+</UserControl>

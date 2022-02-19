@@ -60,10 +60,18 @@
 
             </Grid>
 
-            <TextBlock Grid.Row="1" Grid.Column="0"
-                       Text="Base offset:"
-                       VerticalAlignment="Center"
-                       Margin="{StaticResource Thickness.Vertical.Small}"/>
+            <StackPanel Grid.Row="1" Grid.Column="0" 
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        Margin="{StaticResource Thickness.Vertical.Small}">
+
+                <TextBlock Text="Base offset:"
+                           Margin="{StaticResource Thickness.Horizontal.Small}"/>
+
+                <local:InfoIcon VerticalAlignment="Center"
+                                Text="The base offset of the file. For a GBA ROM this should be 08000000." />
+
+            </StackPanel>
 
             <TextBox Grid.Row="1" Grid.Column="2"
                      HorizontalAlignment="Left" 
@@ -171,9 +179,17 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <TextBlock Style="{StaticResource TextBlock.Header}" 
-                           Text="Data Range" 
-                           Margin="{StaticResource Thickness.Vertical.Small}"/>
+                <StackPanel Orientation="Horizontal"
+                            Margin="{StaticResource Thickness.Vertical.Small}">
+
+                    <TextBlock Style="{StaticResource TextBlock.Header}" 
+                               Text="Data Range" 
+                               Margin="{StaticResource Thickness.Horizontal.Small}"/>
+
+                    <local:InfoIcon VerticalAlignment="Center"
+                                    Text="The range to search within. If both values are set to the same offset then that will be the only offset checked." />
+
+                </StackPanel>
 
                 <StackPanel Orientation="Horizontal"
                             Margin="{StaticResource Thickness.Vertical.Large}">
@@ -191,9 +207,17 @@
 
                 </StackPanel>
 
-                <TextBlock Style="{StaticResource TextBlock.Header}" 
-                           Text="Decompressed Size" 
-                           Margin="{StaticResource Thickness.Vertical.Small}"/>
+                <StackPanel Orientation="Horizontal"
+                            Margin="{StaticResource Thickness.Vertical.Small}">
+
+                    <TextBlock Style="{StaticResource TextBlock.Header}" 
+                               Text="Decompressed Size" 
+                               Margin="{StaticResource Thickness.Horizontal.Small}"/>
+
+                    <local:InfoIcon VerticalAlignment="Center"
+                                    Text="The allowed size range for the decompressed data. Increasing the maximum size will yield more results, but can also slow down the search and produce more garbage results. The data alignment can be set to filter it more, forcing the size to be a factor of the specified value. Use 20 when searching for palettes or tiles or 2 when searching for maps." />
+
+                </StackPanel>
 
                 <StackPanel Orientation="Horizontal"
                             Margin="{StaticResource Thickness.Vertical.Large}">
