@@ -340,7 +340,7 @@ public class MainWindowViewModel : BaseViewModel
 
             byte[] data = c.GetData();
 
-            for (int i = 0; i < data.Length - bytes.Length; i++)
+            for (int i = 0; i < data.Length - bytes.Length + 1; i++)
             {
                 if (data[i] != bytes[0]) 
                     continue;
