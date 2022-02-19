@@ -24,9 +24,9 @@ public class MainWindowViewModel : BaseViewModel
 
         CompressionTypes = new CompressionViewModel[]
         {
-            new CompressionViewModel("LZSS", new GBA_LZSSEncoder(), 0x10),
-            new CompressionViewModel("Huffman", new GBA_HuffmanEncoder(), 0x24, 0x28),
-            new CompressionViewModel("RLE", new GBA_RLEEncoder(), 0x30),
+            new CompressionViewModel("LZSS", new GBA_LZSSEncoder(), true, 0x10),
+            new CompressionViewModel("Huffman", new GBA_HuffmanEncoder(), false, 0x24, 0x28),
+            new CompressionViewModel("RLE", new GBA_RLEEncoder(), false, 0x30),
         };
         CompressedData = new ObservableCollection<CompressedDataViewModel>();
 
@@ -184,7 +184,7 @@ public class MainWindowViewModel : BaseViewModel
             DecompressedDataAlign = 1;
 
             foreach (CompressionViewModel c in CompressionTypes)
-                c.IncludeInSearch = true;
+                c.IncludeInSearch = c.IncludeInSearchDefault;
         }
         catch (Exception ex)
         {
