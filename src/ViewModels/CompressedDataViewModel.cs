@@ -16,7 +16,7 @@ public class CompressedDataViewModel : BaseViewModel
 
     public CompressedDataViewModel(
         MessageService messageService, 
-        CompressedDataProvider dataProvider, 
+        FileDataProvider dataProvider, 
         CompressionViewModel compression, 
         uint offset, 
         uint compressedLength, 
@@ -53,8 +53,9 @@ public class CompressedDataViewModel : BaseViewModel
 
     #region Private Fields
 
-    private readonly CompressedDataProvider _dataProvider;
+    private readonly FileDataProvider _dataProvider;
     private readonly object _loadLock = new();
+    private uint _tilesPaletteOffset;
 
     #endregion
 
@@ -95,6 +96,24 @@ public class CompressedDataViewModel : BaseViewModel
     public ImageSource? Tiles8Preview { get; set; }
     public int TilesPreviewTileWidth { get; set; } = 2;
     public int TilesPreviewWidth => TilesPreviewTileWidth * GBAConstants.TileSize;
+    public uint TilesPaletteOffset
+    {
+        get => _tilesPaletteOffset;
+        set
+        {
+            bool wasValid = _dataProvider.IsOffsetValid(_tilesPaletteOffset);
+            bool isValid = _dataProvider.IsOffsetValid(value);
+
+            _tilesPaletteOffset = value;
+
+            if (isValid || wasValid)
+            {
+                LoadTilePalette();
+                LoadTilePreviews();
+            }
+        }
+    }
+    public Color[]? TilesPalette { get; set; }
 
     public ImageSource? Map8Preview { get; set; }
     public ImageSource? Map16Preview { get; set; }
@@ -119,38 +138,22 @@ public class CompressedDataViewModel : BaseViewModel
 
     private static int GetPaletteLength(int bpp) => (int)Math.Pow(2, bpp);
 
-    private static BaseColor[] CreateDummyPalette(int length, bool firstTransparent = true, int? wrap = null)
+    private static Color[] CreateDummyPalette(int length, bool firstTransparent = true, int? wrap = null)
     {
-        BaseColor[] pal = new BaseColor[length];
+        Color[] pal = new Color[length];
 
         wrap ??= length;
 
         if (firstTransparent)
-            pal[0] = BaseColor.Clear;
+            pal[0] = Colors.Transparent;
 
         for (int i = firstTransparent ? 1 : 0; i < length; i++)
         {
-            float val = (float)(i % wrap.Value) / (wrap.Value - 1);
-            pal[i] = new CustomColor(val, val, val);
+            byte val = (byte)((float)(i % wrap.Value) / (wrap.Value - 1) * 255);
+            pal[i] = Color.FromRgb(val, val, val);
         }
 
         return pal;
-    }
-
-    private static IList<Color> ConvertColors(IEnumerable<BaseColor> colors, int bpp, bool trimPalette)
-    {
-        int wrap = GetPaletteLength(bpp);
-
-        var c = colors.Select((x, i) => Color.FromArgb(
-            a: (byte)(i % wrap == 0 ? 0 : 255),
-            r: (byte)(x.Red * 255),
-            g: (byte)(x.Green * 255),
-            b: (byte)(x.Blue * 255))).ToArray();
-
-        if (trimPalette && c.Length >= wrap)
-            c = c.Take(wrap).ToArray();
-
-        return c;
     }
 
     private ImageSource? CreatePalettePreview()
@@ -217,7 +220,7 @@ public class CompressedDataViewModel : BaseViewModel
         }
     }
 
-    private ImageSource? CreateTilesPreview(int bpp, int width, IList<BaseColor>? palette)
+    private ImageSource? CreateTilesPreview(int bpp, int width, IList<Color>? palette)
     {
         try
         {
@@ -243,11 +246,10 @@ public class CompressedDataViewModel : BaseViewModel
             int stride = GetStride(width, format);
 
             // Create a dummy palette if none is given
-            if (palette?.Any() != true)
-                palette = CreateDummyPalette(256, true, wrap: GetPaletteLength(bpp));
+            palette ??= CreateDummyPalette(256, true, wrap: GetPaletteLength(bpp));
 
             // Get the palette
-            BitmapPalette bmpPal = new BitmapPalette(ConvertColors(palette, bpp, false));
+            BitmapPalette bmpPal = new BitmapPalette(palette);
 
             // Create a buffer for the image data
             byte[] imgData = new byte[width * height];
@@ -343,6 +345,7 @@ public class CompressedDataViewModel : BaseViewModel
                 if (Data.Length != 0)
                 {
                     LoadPalettePreview();
+                    LoadTilePalette();
                     LoadTilePreviews();
                     LoadMapPreviews();
                 }
@@ -361,11 +364,51 @@ public class CompressedDataViewModel : BaseViewModel
         PalettePreview = CreatePalettePreview();
     }
 
+    public void LoadTilePalette()
+    {
+        if (!_dataProvider.IsOffsetValid(TilesPaletteOffset))
+        {
+            TilesPalette = null;
+            return;
+        }
+
+        try
+        {
+            const int palLength = 256;
+
+            byte[] data = _dataProvider.GetData(TilesPaletteOffset, palLength * 2);
+            Color[] pal = new Color[palLength];
+
+            for (int i = 0; i < palLength; i++)
+            {
+                if (i == 0)
+                {
+                    pal[i] = Colors.Transparent;
+                    continue;
+                }
+
+                var value = data[i * 2 + 1] << 8 | data[i * 2];
+
+                byte red = (byte)(BitHelpers.ExtractBits(value, 5, 0) / 31f * 255);
+                byte green = (byte)(BitHelpers.ExtractBits(value, 5, 5) / 31f * 255);
+                byte blue = (byte)(BitHelpers.ExtractBits(value, 5, 10) / 31f * 255);
+
+                pal[i] = Color.FromRgb(red, green, blue);
+            }
+
+            TilesPalette = pal;
+        }
+        catch (Exception ex)
+        {
+            TilesPalette = null;
+            Message.DisplayEception(ex, "An error occurred when loading the tile palette");
+        }
+    }
+
     public void LoadTilePreviews()
     {
-        // TODO: Allow a palette to be specified from an offset
-        Tiles4Preview = CreateTilesPreview(4, TilesPreviewWidth, null);
-        Tiles8Preview = CreateTilesPreview(8, TilesPreviewWidth, null);
+        Tiles4Preview = CreateTilesPreview(4, TilesPreviewWidth, TilesPalette);
+        Tiles8Preview = CreateTilesPreview(8, TilesPreviewWidth, TilesPalette);
     }
 
     public void LoadMapPreviews()

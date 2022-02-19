@@ -67,7 +67,7 @@ public class MainWindowViewModel : BaseViewModel
     #region Private Fields
 
     private readonly HashSet<uint> _foundDataOffsets = new(); // Local file offsets
-    private CompressedDataProvider? _dataCache;
+    private FileDataProvider? _dataCache;
 
     #endregion
 
@@ -170,7 +170,7 @@ public class MainWindowViewModel : BaseViewModel
         try
         {
             FileData = File.ReadAllBytes(FilePath ?? String.Empty);
-            _dataCache = new CompressedDataProvider(FileData, FileOffset);
+            _dataCache = new FileDataProvider(FileData, FileOffset);
 
             FileReferences = FindFileReferences(FileData, FileOffset);
 
@@ -230,6 +230,11 @@ public class MainWindowViewModel : BaseViewModel
             SearchProgress = 0;
 
             uint max = MaxSearchOffset - FileOffset;
+
+            // Fix for searching a single address using same min and max
+            if (MinSearchOffset == MaxSearchOffset)
+                max++;
+
             SearchProgressMax = max;
 
             await Task.Run(() =>

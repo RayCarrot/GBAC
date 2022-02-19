@@ -435,13 +435,28 @@
                                    Text="Tiles"
                                    Margin="{StaticResource Thickness.Vertical.Small}"/>
 
-                        <mah:NumericUpDown Minimum="0"
-                                           Maximum="64"
-                                           Value="{Binding Path=TilesPreviewTileWidth}"
-                                           Margin="{StaticResource Thickness.Vertical.Small}"
-                                           HorizontalAlignment="Left"
-                                           MinWidth="70"
-                                           ValueChanged="TilePreviewWidthNumericUpDown_OnValueChanged"/>
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="{StaticResource Thickness.Vertical.Small}">
+
+                            <TextBlock Text="Width:"
+                                       VerticalAlignment="Center"
+                                       Margin="{StaticResource Thickness.Horizontal.Small}" />
+
+                            <mah:NumericUpDown Minimum="0"
+                                               Maximum="64"
+                                               Value="{Binding Path=TilesPreviewTileWidth}"
+                                               Margin="{StaticResource Thickness.Horizontal.Large}"
+                                               MinWidth="70"
+                                               ValueChanged="TilePreviewWidthNumericUpDown_OnValueChanged"/>
+
+                            <TextBlock Text="Palette offset:"
+                                       VerticalAlignment="Center"
+                                       Margin="{StaticResource Thickness.Horizontal.Small}" />
+
+                            <TextBox MinWidth="100"
+                                     Text="{Binding Path=TilesPaletteOffset, Converter={local:UintToHexStringConverter}, ConverterParameter=8}" />
+
+                        </StackPanel>
 
                         <ScrollViewer MaxHeight="300" 
                                       HorizontalAlignment="Left">
@@ -485,13 +500,21 @@
                                    Text="Map"
                                    Margin="{StaticResource Thickness.Vertical.Small}"/>
 
-                        <mah:NumericUpDown Minimum="0"
-                                           Maximum="2048"
-                                           Value="{Binding Path=MapPreviewWidth}"
-                                           Margin="{StaticResource Thickness.Vertical.Small}"
-                                           HorizontalAlignment="Left"
-                                           MinWidth="70"
-                                           ValueChanged="MapPreviewWidthNumericUpDown_OnValueChanged"/>
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="{StaticResource Thickness.Vertical.Small}">
+
+                            <TextBlock Text="Width:"
+                                       VerticalAlignment="Center"
+                                       Margin="{StaticResource Thickness.Horizontal.Small}" />
+
+                            <mah:NumericUpDown Minimum="0"
+                                               Maximum="2048"
+                                               Value="{Binding Path=MapPreviewWidth}"
+                                               HorizontalAlignment="Left"
+                                               MinWidth="70"
+                                               ValueChanged="MapPreviewWidthNumericUpDown_OnValueChanged"/>
+
+                        </StackPanel>
 
                         <ScrollViewer MaxHeight="300" 
                                       HorizontalAlignment="Left">
