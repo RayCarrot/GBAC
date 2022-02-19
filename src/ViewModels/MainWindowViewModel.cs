@@ -67,7 +67,7 @@ public class MainWindowViewModel : BaseViewModel
     #region Private Fields
 
     private readonly HashSet<uint> _foundDataOffsets = new(); // Local file offsets
-    private FileDataProvider? _dataCache;
+    private FileDataProvider? _dataProvider;
 
     #endregion
 
@@ -116,7 +116,9 @@ public class MainWindowViewModel : BaseViewModel
 
         uint fileEnd = (uint)(fileOffset + fileData.Length);
 
-        for (uint i = 4 - (fileOffset % 4); i < fileData.Length; i += 4)
+        uint start = fileOffset % 4 == 0 ? 0 : 4 - (fileOffset % 4);
+
+        for (uint i = start; i < fileData.Length - 4; i += 4)
         {
             uint pointer = ((uint)fileData[i + 3] << 24) | ((uint)fileData[i + 2] << 16) | ((uint)fileData[i + 1] << 8) | fileData[i + 0];
 
@@ -155,7 +157,7 @@ public class MainWindowViewModel : BaseViewModel
 
     public void BrowseFile()
     {
-        string? filePath = Browse.BrowseFile("Select the game file");
+        string? filePath = Browse.OpenFile("Select the game file");
 
         if (filePath == null)
             return;
@@ -169,8 +171,11 @@ public class MainWindowViewModel : BaseViewModel
 
         try
         {
-            FileData = File.ReadAllBytes(FilePath ?? String.Empty);
-            _dataCache = new FileDataProvider(FileData, FileOffset);
+            if (FilePath == null)
+                throw new IOException("File path is null");
+
+            FileData = File.ReadAllBytes(FilePath);
+            _dataProvider = new FileDataProvider(FileData, FileOffset, FilePath);
 
             FileReferences = FindFileReferences(FileData, FileOffset);
 
@@ -188,6 +193,7 @@ public class MainWindowViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
+            UnloadFile();
             Message.DisplayEception(ex, "An error occurred when loading the file");
         }
     }
@@ -199,7 +205,7 @@ public class MainWindowViewModel : BaseViewModel
 
         FileData = null;
         FileReferences = null;
-        _dataCache = null;
+        _dataProvider = null;
         FindBytesInput = String.Empty;
         ClearData();
         SetTitle();
@@ -210,7 +216,7 @@ public class MainWindowViewModel : BaseViewModel
         if (IsSearching)
             return;
 
-        if (FileData == null || _dataCache == null || FileReferences == null)
+        if (FileData == null || _dataProvider == null || FileReferences == null)
         {
             Message.DisplayMessage("A search can not be performed due to the file not being correctly loaded", "Error");
             return;
@@ -286,8 +292,9 @@ public class MainWindowViewModel : BaseViewModel
                         uint fileOffset = FileOffset + i;
 
                         CompressedData.Add(new CompressedDataViewModel(
-                            messageService: Message, 
-                            dataProvider: _dataCache, 
+                            messageService: Message,
+                            browseService: Browse,
+                            dataProvider: _dataProvider, 
                             compression: c, 
                             offset: fileOffset, 
                             compressedLength: (uint)(stream.Position - i), 
@@ -338,30 +345,37 @@ public class MainWindowViewModel : BaseViewModel
             if (bytes.Length == 0)
                 continue;
 
-            byte[] data = c.GetData();
-
-            for (int i = 0; i < data.Length - bytes.Length + 1; i++)
+            try
             {
-                if (data[i] != bytes[0]) 
-                    continue;
+                byte[] data = c.GetData();
 
-                bool found = true;
-                
-                for (int j = 1; j < bytes.Length; j++)
+                for (int i = 0; i < data.Length - bytes.Length + 1; i++)
                 {
-                    if (data[i + j] == bytes[j]) 
+                    if (data[i] != bytes[0])
                         continue;
-                    
-                    found = false;
+
+                    bool found = true;
+
+                    for (int j = 1; j < bytes.Length; j++)
+                    {
+                        if (data[i + j] == bytes[j])
+                            continue;
+
+                        found = false;
+                        break;
+                    }
+
+                    if (!found)
+                        continue;
+
+                    matches++;
+                    c.IsHighlighted = true;
                     break;
                 }
-
-                if (!found) 
-                    continue;
-
-                matches++;
-                c.IsHighlighted = true;
-                break;
+            }
+            catch (Exception ex)
+            {
+                Message.DisplayEception(ex, $"An error occurred when searching for the bytes in the data at {c.Offset:X8}");
             }
         }
 

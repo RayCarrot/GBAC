@@ -6,14 +6,18 @@ namespace GBAC;
 
 public class FileDataProvider
 {
-    public FileDataProvider(byte[] fileData, uint fileOffset)
+    public FileDataProvider(byte[] fileData, uint fileOffset, string filePath)
     {
+        FileData = fileData;
         Stream = new MemoryStream(fileData);
         FileOffset = fileOffset;
+        FilePath = filePath;
     }
 
+    private byte[] FileData { get; }
     private MemoryStream Stream { get; }
     private uint FileOffset { get; }
+    private string FilePath { get; }
 
     public byte[] GetData(uint offset, int length, bool allowPartialRead = true)
     {
@@ -49,6 +53,12 @@ public class FileDataProvider
 
             return outStream.ToArray();
         }
+    }
+
+    public void OverwriteData(uint offset, byte[] data)
+    {
+        Array.Copy(data, 0, FileData, offset - FileOffset, data.Length);
+        File.WriteAllBytes(FilePath, FileData);
     }
 
     public bool IsOffsetValid(uint offset)

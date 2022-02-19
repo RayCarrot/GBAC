@@ -318,7 +318,7 @@
                                 </DataGridTextColumn.Header>
                             </DataGridTextColumn>
                             <DataGridTextColumn IsReadOnly="True"
-                                                Binding="{Binding Path=CompressedLength, Mode=OneTime, Converter={local:UintToHexStringConverter}}">
+                                                Binding="{Binding Path=CompressedLength, Converter={local:UintToHexStringConverter}}">
                                 <DataGridTextColumn.Header>
                                     <TextBlock>
                                         Compressed<LineBreak />
@@ -327,7 +327,7 @@
                                 </DataGridTextColumn.Header>
                             </DataGridTextColumn>
                             <DataGridTextColumn IsReadOnly="True"
-                                                Binding="{Binding Path=DecompressedLength, Mode=OneTime, Converter={local:UintToHexStringConverter}}">
+                                                Binding="{Binding Path=DecompressedLength, Converter={local:UintToHexStringConverter}}">
                                 <DataGridTextColumn.Header>
                                     <TextBlock>
                                         Decompressed<LineBreak />
@@ -428,14 +428,12 @@
                                             Command="{Binding Path=CopyDataCommand, Mode=OneTime}"
                                             Margin="{StaticResource Thickness.Horizontal.Large}"/>
 
-                                    <!-- TODO: Implement -->
                                     <Button Content="Export" 
                                             ContentTemplate="{StaticResource Button.IconContentTemplate}"
                                             local:ButtonAssist.IconKind="FileExportOutline"
                                             Command="{Binding Path=ExportDataCommand, Mode=OneTime}"
                                             Margin="{StaticResource Thickness.Horizontal.Small}"/>
 
-                                    <!-- TODO: Implement -->
                                     <Button Content="Import" 
                                             ContentTemplate="{StaticResource Button.IconContentTemplate}"
                                             local:ButtonAssist.IconKind="FileImportOutline"

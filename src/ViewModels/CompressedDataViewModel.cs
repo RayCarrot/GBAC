@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -16,6 +18,7 @@ public class CompressedDataViewModel : BaseViewModel
 
     public CompressedDataViewModel(
         MessageService messageService, 
+        BrowseService browseService, 
         FileDataProvider dataProvider, 
         CompressionViewModel compression, 
         uint offset, 
@@ -24,23 +27,21 @@ public class CompressedDataViewModel : BaseViewModel
         uint[] references)
     {
         Message = messageService;
+        Browse = browseService;
         _dataProvider = dataProvider;
         Compression = compression;
         Offset = offset;
         CompressedLength = compressedLength;
         DecompressedLength = decompressedLength;
         References = references;
+        InfoItems = new ObservableCollection<InfoItemViewModel>();
 
         CopyOffsetCommand = new RelayCommand(CopyOffset);
         CopyDataCommand = new RelayCommand(CopyData);
+        ExportDataCommand = new RelayCommand(ExportData);
+        ImportDataCommand = new RelayCommand(ImportData);
 
-        InfoItems = new InfoItemViewModel[]
-        {
-            new InfoItemViewModel("Compression", Compression.DisplayName),
-            new InfoItemViewModel("Compressed Length", $"{CompressedLength:X}"),
-            new InfoItemViewModel("Decompressed Length", $"{DecompressedLength:X}"),
-            new InfoItemViewModel("References", String.Join(", ", References.Select(x => $"{x:X8}"))),
-        };
+        LoadInfoItems();
     }
 
     #endregion
@@ -63,6 +64,7 @@ public class CompressedDataViewModel : BaseViewModel
     #region Services
 
     private MessageService Message { get; }
+    private BrowseService Browse { get; }
 
     #endregion
 
@@ -70,6 +72,8 @@ public class CompressedDataViewModel : BaseViewModel
 
     public ICommand CopyOffsetCommand { get; }
     public ICommand CopyDataCommand { get; }
+    public ICommand ExportDataCommand { get; }
+    public ICommand ImportDataCommand { get; }
 
     #endregion
 
@@ -77,14 +81,14 @@ public class CompressedDataViewModel : BaseViewModel
 
     public CompressionViewModel Compression { get; }
     public uint Offset { get; }
-    public uint CompressedLength { get; }
-    public uint DecompressedLength { get; }
+    public uint CompressedLength { get; private set; }
+    public uint DecompressedLength { get; private set; }
     public uint[] References { get; }
     public int ReferencesCount => References.Length;
 
     public bool IsHighlighted { get; set; }
 
-    public InfoItemViewModel[] InfoItems { get; }
+    public ObservableCollection<InfoItemViewModel> InfoItems { get; }
 
     public bool IsLoading { get; set; }
     public bool IsLoaded { get; set; }
@@ -354,6 +358,10 @@ public class CompressedDataViewModel : BaseViewModel
 
                 IsLoaded = true;
             }
+            catch (Exception ex)
+            {
+                Message.DisplayEception(ex, "An error occurred when loading the data");
+            }
             finally
             {
                 IsLoading = false;
@@ -419,6 +427,16 @@ public class CompressedDataViewModel : BaseViewModel
         Map16Preview = CreateMapPreview(16, MapPreviewWidth);
     }
 
+    public void LoadInfoItems()
+    {
+        InfoItems.Clear();
+
+        InfoItems.Add(new InfoItemViewModel("Compression", Compression.DisplayName));
+        InfoItems.Add(new InfoItemViewModel("Compressed Length", $"{CompressedLength:X}"));
+        InfoItems.Add(new InfoItemViewModel("Decompressed Length", $"{DecompressedLength:X}"));
+        InfoItems.Add(new InfoItemViewModel("References", String.Join(", ", References.Select(x => $"{x:X8}"))));
+    }
+
     public void Unload()
     {
         lock (_loadLock)
@@ -443,7 +461,66 @@ public class CompressedDataViewModel : BaseViewModel
 
     public void CopyData()
     {
-        Clipboard.SetText(GetData().ToHexString());
+        try
+        {
+            Clipboard.SetText(GetData().ToHexString());
+        }
+        catch (Exception ex)
+        {
+            Message.DisplayEception(ex, "An error occurred when copying the data");
+        }
+    }
+
+    public void ExportData()
+    {
+        string? filePath = Browse.SaveFile("Export raw data", $"{Offset:X8}.bin");
+
+        if (filePath == null)
+            return;
+
+        try
+        {
+            File.WriteAllBytes(filePath, GetData());
+        }
+        catch (Exception ex)
+        {
+            Message.DisplayEception(ex, "An error occurred when exporting the data");
+        }
+    }
+
+    public void ImportData()
+    {
+        string? filePath = Browse.OpenFile("Import raw data");
+
+        if (filePath == null)
+            return;
+
+        try
+        {
+            // Read the bytes
+            byte[] data = File.ReadAllBytes(filePath);
+
+            // Compress the data
+            byte[] compressedData = Compression.Encoder.EncodeBuffer(data);
+
+            // Verify
+            if (!Message.DisplayQuestion($"Importing this data will overwrite {compressedData.Length:X} bytes in the file. " +
+                                         $"If this is bigger than the original compressed size then this might result in other " +
+                                         $"data being overwritten. Continue?", "Confirm import"))
+                return;
+
+            _dataProvider.OverwriteData(Offset, compressedData);
+
+            CompressedLength = (uint)compressedData.Length;
+            DecompressedLength = (uint)data.Length;
+
+            LoadInfoItems();
+            Load();
+        }
+        catch (Exception ex)
+        {
+            Message.DisplayEception(ex, "An error occurred when importing the data");
+        }
     }
 
     #endregion
