@@ -10,29 +10,66 @@ namespace GBAC;
 
 public class CompressedDataViewModel : BaseViewModel
 {
-    public CompressedDataViewModel(CompressedDataProvider dataProvider, CompressionViewModel compression, uint offset, uint compressedLength, uint decompressedLength)
+    #region Constructor
+
+    public CompressedDataViewModel(
+        MessageService messageService, 
+        CompressedDataProvider dataProvider, 
+        CompressionViewModel compression, 
+        uint offset, 
+        uint compressedLength, 
+        uint decompressedLength, 
+        uint[] references)
     {
+        Message = messageService;
         _dataProvider = dataProvider;
         Compression = compression;
         Offset = offset;
         CompressedLength = compressedLength;
         DecompressedLength = decompressedLength;
+        References = references;
 
-        Message = new MessageService();
+        InfoItems = new InfoItemViewModel[]
+        {
+            new InfoItemViewModel("Compression", Compression.DisplayName),
+            new InfoItemViewModel("Compressed Length", CompressedLength.ToString()),
+            new InfoItemViewModel("Decompressed Length", DecompressedLength.ToString()),
+            new InfoItemViewModel("References", String.Join(", ", References.Select(x => $"{x:X8}"))),
+        };
     }
+
+    #endregion
+
+    #region Private Constants
 
     private const double DpiX = 96;
     private const double DpiY = 96;
 
+    #endregion
+
+    #region Private Fields
+
     private readonly CompressedDataProvider _dataProvider;
     private readonly object _loadLock = new();
 
+    #endregion
+
+    #region Services
+
     private MessageService Message { get; }
+
+    #endregion
+
+    #region Public Properties
 
     public CompressionViewModel Compression { get; }
     public uint Offset { get; }
     public uint CompressedLength { get; }
     public uint DecompressedLength { get; }
+    public uint[] References { get; }
+    public int ReferencesCount => References.Length;
+
+    public InfoItemViewModel[] InfoItems { get; }
 
     public bool IsLoading { get; set; }
     public bool IsLoaded { get; set; }
@@ -51,12 +88,19 @@ public class CompressedDataViewModel : BaseViewModel
     public ImageSource? Map16Preview { get; set; }
     public int MapPreviewWidth { get; set; } = 100;
 
-    private static int GetStride(int width, PixelFormat format)
+    #endregion
+
+    #region Private Methods
+
+    private static int GetStride(int width, PixelFormat format, int align = 0)
     {
         int stride = (int)(width / (8f / format.BitsPerPixel));
 
-        //if (stride % 4 != 0)
-        //    stride += 4 - stride % 4;
+        if (align != 0)
+        {
+            if (stride % align != 0)
+                stride += align - stride % align;
+        }
 
         return stride;
     }
@@ -232,7 +276,7 @@ public class CompressedDataViewModel : BaseViewModel
         }
     }
 
-    public ImageSource? CreateMapPreview(int bpp, int width)
+    private ImageSource? CreateMapPreview(int bpp, int width)
     {
         try
         {
@@ -268,6 +312,10 @@ public class CompressedDataViewModel : BaseViewModel
             return null;
         }
     }
+
+    #endregion
+
+    #region Public Methods
 
     public void Load()
     {
@@ -324,4 +372,6 @@ public class CompressedDataViewModel : BaseViewModel
             IsLoaded = false;
         }
     }
+
+    #endregion
 }

@@ -121,7 +121,6 @@
 
                 <mah:ToggleSwitch x:Name="AdvancedOptionsSwitch"
                                   Grid.Column="2" 
-                                  IsOn="True"
                                   Content="Advanced"
                                   ToolTip="Shows advanced search options"
                                   Margin="{StaticResource Thickness.Horizontal.Large}" />
@@ -279,6 +278,12 @@
                                 </TextBlock>
                             </DataGridTextColumn.Header>
                         </DataGridTextColumn>
+                        <DataGridTextColumn IsReadOnly="True"
+                                            Binding="{Binding Path=ReferencesCount, Mode=OneTime}">
+                            <DataGridTextColumn.Header>
+                                <TextBlock Text="References" />
+                            </DataGridTextColumn.Header>
+                        </DataGridTextColumn>
                     </DataGrid.Columns>
 
                 </DataGrid>
@@ -294,6 +299,34 @@
                                    Text="{Binding Path=Offset, Converter={local:UintToHexStringConverter}, ConverterParameter=8, Mode=OneTime}"
                                    HorizontalAlignment="Left" 
                                    Margin="{StaticResource Thickness.Vertical.Large}"/>
+
+                        <ItemsControl ItemsSource="{Binding Path=InfoItems, Mode=OneTime}" 
+                                      Grid.IsSharedSizeScope="True"
+                                      Margin="{StaticResource Thickness.Vertical.Large}">
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" SharedSizeGroup="Header" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Column="0"
+                                                   FontWeight="Bold" 
+                                                   Text="{Binding Path=Header, Mode=OneTime}"
+                                                   Margin="{StaticResource Thickness.Horizontal.Large}"/>
+
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding Path=Text, Mode=OneTime}" />
+
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+                        </ItemsControl>
+
+                        <Separator Margin="{StaticResource Thickness.Vertical.Large}" />
 
                         <!-- Raw & Palette -->
                         <WrapPanel>

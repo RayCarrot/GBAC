@@ -13,7 +13,9 @@ namespace GBAC
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = ViewModel = new MainWindowViewModel();
+
+            // TODO: Inject using DI
+            DataContext = ViewModel = new MainWindowViewModel(new MessageService(), new BrowseService());
         }
 
         public MainWindowViewModel ViewModel { get; }

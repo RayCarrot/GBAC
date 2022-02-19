@@ -15,10 +15,10 @@ public class MainWindowViewModel : BaseViewModel
 {
     #region Constructor
 
-    public MainWindowViewModel()
+    public MainWindowViewModel(MessageService messageService, BrowseService browseService)
     {
-        Message = new MessageService();
-        Browse = new BrowseService();
+        Message = messageService;
+        Browse = browseService;
 
         FileOffset = GBAConstants.Address_ROM;
 
@@ -80,6 +80,7 @@ public class MainWindowViewModel : BaseViewModel
 
     // Data
     public byte[]? FileData { get; set; }
+    public Dictionary<uint, uint[]>? FileReferences { get; set; }
     public bool IsLoaded => FileData != null;
 
     // Search
@@ -99,6 +100,32 @@ public class MainWindowViewModel : BaseViewModel
     public CompressionViewModel[] CompressionTypes { get; }
     public ObservableCollection<CompressedDataViewModel> CompressedData { get; }
     public CompressedDataViewModel? SelectedData { get; set; }
+
+    #endregion
+
+    #region Private Methods
+
+    private static Dictionary<uint, uint[]> FindFileReferences(byte[] fileData, uint fileOffset)
+    {
+        Dictionary<uint, HashSet<uint>> refs = new();
+
+        uint fileEnd = (uint)(fileOffset + fileData.Length);
+
+        for (uint i = 4 - (fileOffset % 4); i < fileData.Length; i += 4)
+        {
+            uint pointer = ((uint)fileData[i + 3] << 24) | ((uint)fileData[i + 2] << 16) | ((uint)fileData[i + 1] << 8) | fileData[i + 0];
+
+            if (pointer < fileOffset || pointer >= fileEnd) 
+                continue;
+            
+            if (!refs.ContainsKey(pointer))
+                refs[pointer] = new HashSet<uint>();
+
+            refs[pointer].Add(i + fileOffset);
+        }
+
+        return refs.ToDictionary(x => x.Key, x => x.Value.ToArray());
+    }
 
     #endregion
 
@@ -122,6 +149,8 @@ public class MainWindowViewModel : BaseViewModel
         {
             FileData = File.ReadAllBytes(FilePath ?? String.Empty);
             _dataCache = new CompressedDataProvider(FileData, FileOffset);
+
+            FileReferences = FindFileReferences(FileData, FileOffset);
 
             SetTitle(Path.GetFileName(FilePath));
 
@@ -147,6 +176,7 @@ public class MainWindowViewModel : BaseViewModel
             throw new Exception("Can't unload file while searching for data");
 
         FileData = null;
+        FileReferences = null;
         _dataCache = null;
         ClearData();
         SetTitle();
@@ -154,8 +184,14 @@ public class MainWindowViewModel : BaseViewModel
 
     public async Task SearchAsync()
     {
-        if (FileData == null || _dataCache == null || IsSearching)
+        if (IsSearching)
             return;
+
+        if (FileData == null || _dataCache == null || FileReferences == null)
+        {
+            Message.DisplayMessage("A search can not be performed due to the file not being correctly loaded", "Error");
+            return;
+        }
 
         if (MinSearchOffset < FileOffset || MaxSearchOffset > FileOffset + FileData.Length)
         {
@@ -219,7 +255,17 @@ public class MainWindowViewModel : BaseViewModel
                         if (outStream.Length != size)
                             continue;
 
-                        CompressedData.Add(new CompressedDataViewModel(_dataCache, c, FileOffset + i, (uint)(stream.Position - i), (uint)outStream.Length));
+                        uint fileOffset = FileOffset + i;
+
+                        CompressedData.Add(new CompressedDataViewModel(
+                            messageService: Message, 
+                            dataProvider: _dataCache, 
+                            compression: c, 
+                            offset: fileOffset, 
+                            compressedLength: (uint)(stream.Position - i), 
+                            decompressedLength: (uint)outStream.Length, 
+                            references: FileReferences.TryGetValue(fileOffset, out uint[] refs) ? refs : Array.Empty<uint>()));
+
                         _foundDataOffsets.Add(i);
                         break;
                     }
