@@ -241,6 +241,8 @@ public class MainWindowViewModel : BaseViewModel
             if (MinSearchOffset == MaxSearchOffset)
                 max++;
 
+            max = (uint)Math.Min(max, FileData.Length - 4);
+
             SearchProgressMax = max;
 
             await Task.Run(() =>
