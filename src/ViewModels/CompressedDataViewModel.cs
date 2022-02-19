@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using BinarySerializer;
@@ -28,6 +30,8 @@ public class CompressedDataViewModel : BaseViewModel
         CompressedLength = compressedLength;
         DecompressedLength = decompressedLength;
         References = references;
+
+        CopyDataCommand = new RelayCommand(CopyData);
 
         InfoItems = new InfoItemViewModel[]
         {
@@ -57,6 +61,12 @@ public class CompressedDataViewModel : BaseViewModel
     #region Services
 
     private MessageService Message { get; }
+
+    #endregion
+
+    #region Commands
+
+    public ICommand CopyDataCommand { get; }
 
     #endregion
 
@@ -379,6 +389,11 @@ public class CompressedDataViewModel : BaseViewModel
     {
         lock (_loadLock)
             return Data ?? _dataProvider.GetData(Offset, Compression.Encoder);
+    }
+
+    public void CopyData()
+    {
+        Clipboard.SetText(GetData().ToHexString());
     }
 
     #endregion

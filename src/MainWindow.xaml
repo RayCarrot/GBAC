@@ -384,7 +384,6 @@
                                 <StackPanel Orientation="Horizontal"
                                             Margin="{StaticResource Thickness.Vertical.Small}">
 
-                                    <!-- TODO: Implement -->
                                     <Button Content="Copy to Clipboard" 
                                             ContentTemplate="{StaticResource Button.IconContentTemplate}"
                                             local:ButtonAssist.IconKind="ClipboardOutline"
