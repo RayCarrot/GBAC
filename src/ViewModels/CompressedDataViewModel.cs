@@ -32,8 +32,8 @@ public class CompressedDataViewModel : BaseViewModel
         InfoItems = new InfoItemViewModel[]
         {
             new InfoItemViewModel("Compression", Compression.DisplayName),
-            new InfoItemViewModel("Compressed Length", CompressedLength.ToString()),
-            new InfoItemViewModel("Decompressed Length", DecompressedLength.ToString()),
+            new InfoItemViewModel("Compressed Length", $"{CompressedLength:X}"),
+            new InfoItemViewModel("Decompressed Length", $"{DecompressedLength:X}"),
             new InfoItemViewModel("References", String.Join(", ", References.Select(x => $"{x:X8}"))),
         };
     }
