@@ -38,6 +38,7 @@ public class MainWindowViewModel : BaseViewModel
         SearchCommand = new AsyncRelayCommand(SearchAsync);
         StopSearchCommand = new RelayCommand(StopSearch);
         ClearDataCommand = new RelayCommand(ClearData);
+        FindBytesCommand = new RelayCommand(FindBytes);
 
         SetTitle();
     }
@@ -59,6 +60,7 @@ public class MainWindowViewModel : BaseViewModel
     public ICommand SearchCommand { get; }
     public ICommand StopSearchCommand { get; }
     public ICommand ClearDataCommand { get; }
+    public ICommand FindBytesCommand { get; }
 
     #endregion
 
@@ -101,6 +103,9 @@ public class MainWindowViewModel : BaseViewModel
     public ObservableCollection<CompressedDataViewModel> CompressedData { get; }
     public CompressedDataViewModel? SelectedData { get; set; }
 
+    // Find
+    public string? FindBytesInput { get; set; }
+
     #endregion
 
     #region Private Methods
@@ -125,6 +130,23 @@ public class MainWindowViewModel : BaseViewModel
         }
 
         return refs.ToDictionary(x => x.Key, x => x.Value.ToArray());
+    }
+
+    private static byte[] StringToByteArray(string hex)
+    {
+        hex = hex.Replace(" ", "");
+
+        byte[] arr = new byte[hex.Length >> 1];
+
+        for (int i = 0; i < hex.Length >> 1; ++i)
+            arr[i] = (byte)((GetHexVal((byte)hex[i << 1]) << 4) + (GetHexVal((byte)hex[(i << 1) + 1])));
+
+        return arr;
+    }
+
+    private static int GetHexVal(byte hex)
+    {
+        return hex - (hex < 58 ? 48 : (hex < 97 ? 55 : 87));
     }
 
     #endregion
@@ -178,6 +200,7 @@ public class MainWindowViewModel : BaseViewModel
         FileData = null;
         FileReferences = null;
         _dataCache = null;
+        FindBytesInput = String.Empty;
         ClearData();
         SetTitle();
     }
@@ -292,6 +315,52 @@ public class MainWindowViewModel : BaseViewModel
         SelectedData?.Unload();
         SelectedData = null;
         _foundDataOffsets.Clear();
+    }
+
+    public void FindBytes()
+    {
+        if (FindBytesInput == null)
+            return;
+
+        byte[] bytes = StringToByteArray(FindBytesInput);
+
+        int matches = 0;
+
+        foreach (CompressedDataViewModel c in CompressedData)
+        {
+            c.IsHighlighted = false;
+
+            if (bytes.Length == 0)
+                continue;
+
+            byte[] data = c.GetData();
+
+            for (int i = 0; i < data.Length - bytes.Length; i++)
+            {
+                if (data[i] != bytes[0]) 
+                    continue;
+
+                bool found = true;
+                
+                for (int j = 1; j < bytes.Length; j++)
+                {
+                    if (data[i + j] == bytes[j]) 
+                        continue;
+                    
+                    found = false;
+                    break;
+                }
+
+                if (!found) 
+                    continue;
+
+                matches++;
+                c.IsHighlighted = true;
+                break;
+            }
+        }
+
+        Message.DisplayMessage($"Found {matches} matches", "Result");
     }
 
     [MemberNotNull(nameof(Title))]

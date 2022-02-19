@@ -234,59 +234,103 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <DataGrid Grid.Column="0"
-                          AutoGenerateColumns="False"
-                          CanUserResizeColumns="False"
-                          CanUserAddRows="False"
-                          CanUserDeleteRows="False"
-                          CanUserReorderColumns="False"
-                          CanUserResizeRows="False"
-                          CanUserSortColumns="True"
-                          SelectionMode="Single"
-                          SelectionChanged="DataGrid_OnSelectionChanged"
-                          SelectedItem="{Binding Path=SelectedData}"
-                          ItemsSource="{Binding Path=CompressedData, Mode=OneTime}">
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-                    <DataGrid.Columns>
-                        <DataGridTextColumn IsReadOnly="True"
-                                            Binding="{Binding Path=Offset, Mode=OneTime, StringFormat=X8}">
-                            <DataGridTextColumn.Header>
-                                <TextBlock Text="Offset" />
-                            </DataGridTextColumn.Header>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn IsReadOnly="True"
-                                            Binding="{Binding Path=Compression.DisplayName, Mode=OneTime}">
-                            <DataGridTextColumn.Header>
-                                <TextBlock Text="Compression" />
-                            </DataGridTextColumn.Header>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn IsReadOnly="True"
-                                            Binding="{Binding Path=CompressedLength, Mode=OneTime, Converter={local:UintToHexStringConverter}}">
-                            <DataGridTextColumn.Header>
-                                <TextBlock>
-                                    Compressed<LineBreak/>
-                                    Length
-                                </TextBlock>
-                            </DataGridTextColumn.Header>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn IsReadOnly="True"
-                                            Binding="{Binding Path=DecompressedLength, Mode=OneTime, Converter={local:UintToHexStringConverter}}">
-                            <DataGridTextColumn.Header>
-                                <TextBlock>
-                                    Decompressed<LineBreak/>
-                                    Length
-                                </TextBlock>
-                            </DataGridTextColumn.Header>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn IsReadOnly="True"
-                                            Binding="{Binding Path=ReferencesCount, Mode=OneTime}">
-                            <DataGridTextColumn.Header>
-                                <TextBlock Text="References" />
-                            </DataGridTextColumn.Header>
-                        </DataGridTextColumn>
-                    </DataGrid.Columns>
+                    <DataGrid Grid.Row="0"
+                              AutoGenerateColumns="False"
+                              CanUserResizeColumns="False"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              CanUserReorderColumns="False"
+                              CanUserResizeRows="False"
+                              CanUserSortColumns="True"
+                              SelectionMode="Single"
+                              SelectionChanged="DataGrid_OnSelectionChanged"
+                              SelectedItem="{Binding Path=SelectedData}"
+                              ItemsSource="{Binding Path=CompressedData, Mode=OneTime}">
 
-                </DataGrid>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn IsReadOnly="True"
+                                                Binding="{Binding Path=Offset, Mode=OneTime, StringFormat=X8}">
+                                <DataGridTextColumn.Header>
+                                    <TextBlock Text="Offset" />
+                                </DataGridTextColumn.Header>
+
+                                <DataGridTextColumn.CellStyle>
+                                    <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource MahApps.Styles.DataGridCell}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=IsHighlighted}" Value="True">
+                                                <DataTrigger.Setters>
+                                                    <Setter Property="Foreground" Value="Yellow" />
+                                                </DataTrigger.Setters>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridTextColumn.CellStyle>
+
+                            </DataGridTextColumn>
+                            <DataGridTextColumn IsReadOnly="True"
+                                                Binding="{Binding Path=Compression.DisplayName, Mode=OneTime}">
+                                <DataGridTextColumn.Header>
+                                    <TextBlock Text="Compression" />
+                                </DataGridTextColumn.Header>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn IsReadOnly="True"
+                                                Binding="{Binding Path=CompressedLength, Mode=OneTime, Converter={local:UintToHexStringConverter}}">
+                                <DataGridTextColumn.Header>
+                                    <TextBlock>
+                                        Compressed<LineBreak />
+                                        Length
+                                    </TextBlock>
+                                </DataGridTextColumn.Header>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn IsReadOnly="True"
+                                                Binding="{Binding Path=DecompressedLength, Mode=OneTime, Converter={local:UintToHexStringConverter}}">
+                                <DataGridTextColumn.Header>
+                                    <TextBlock>
+                                        Decompressed<LineBreak />
+                                        Length
+                                    </TextBlock>
+                                </DataGridTextColumn.Header>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn IsReadOnly="True"
+                                                Binding="{Binding Path=ReferencesCount, Mode=OneTime}">
+                                <DataGridTextColumn.Header>
+                                    <TextBlock Text="References" />
+                                </DataGridTextColumn.Header>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+
+                    </DataGrid>
+
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <local:NoResizeTextBox Grid.Column="0" 
+                                               Style="{StaticResource {x:Type TextBox}}"
+                                               Text="{Binding Path=FindBytesInput}"
+                                               Margin="{StaticResource Thickness.Horizontal.Small}"/>
+
+                        <Button Grid.Column="1"
+                                Content="Find Bytes" 
+                                ToolTip="Searches the decompressed data blocks for the specified bytes"
+                                IsEnabled="{Binding Path=IsSearching, Converter={local:InvertedBooleanConverter}}"
+                                ContentTemplate="{StaticResource Button.IconContentTemplate}"
+                                local:ButtonAssist.IconKind="DatabaseSearchOutline"
+                                Command="{Binding Path=FindBytesCommand, Mode=OneTime}"
+                                Margin="{StaticResource Thickness.Horizontal.Large}"/>
+
+
+                    </Grid>
+
+                </Grid>
 
                 <ScrollViewer Grid.Column="1"
                               DataContext="{Binding Path=SelectedData}"

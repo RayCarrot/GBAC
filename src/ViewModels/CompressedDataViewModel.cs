@@ -69,6 +69,8 @@ public class CompressedDataViewModel : BaseViewModel
     public uint[] References { get; }
     public int ReferencesCount => References.Length;
 
+    public bool IsHighlighted { get; set; }
+
     public InfoItemViewModel[] InfoItems { get; }
 
     public bool IsLoading { get; set; }
@@ -371,6 +373,12 @@ public class CompressedDataViewModel : BaseViewModel
             PalettePreview = null;
             IsLoaded = false;
         }
+    }
+
+    public byte[] GetData()
+    {
+        lock (_loadLock)
+            return Data ?? _dataProvider.GetData(Offset, Compression.Encoder);
     }
 
     #endregion
