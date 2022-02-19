@@ -5,6 +5,7 @@
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:local="clr-namespace:GBAC"
                  xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+                 xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
                  Background="{DynamicResource MahApps.Brushes.ThemeBackground}"
                  Foreground="{DynamicResource MahApps.Brushes.ThemeForeground}"
                  mc:Ignorable="d"
@@ -262,6 +263,19 @@
 
                                 <DataGridTextColumn.CellStyle>
                                     <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource MahApps.Styles.DataGridCell}">
+                                        <Setter Property="ContextMenu">
+                                            <Setter.Value>
+                                                <ContextMenu>
+                                                    <MenuItem Header="Copy offset"
+                                                              Command="{Binding Path=CopyOffsetCommand, Mode=OneTime}"
+                                                              Icon="{iconPacks:Material ContentCopy}"/>
+                                                    <MenuItem Header="Copy raw data"
+                                                              Command="{Binding Path=CopyDataCommand, Mode=OneTime}"
+                                                              Icon="{iconPacks:Material ClipboardOutline}"/>
+                                                </ContextMenu>
+                                            </Setter.Value>
+                                        </Setter>
+                                        
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Path=IsHighlighted}" Value="True">
                                                 <DataTrigger.Setters>

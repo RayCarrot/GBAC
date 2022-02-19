@@ -31,6 +31,7 @@ public class CompressedDataViewModel : BaseViewModel
         DecompressedLength = decompressedLength;
         References = references;
 
+        CopyOffsetCommand = new RelayCommand(CopyOffset);
         CopyDataCommand = new RelayCommand(CopyData);
 
         InfoItems = new InfoItemViewModel[]
@@ -67,6 +68,7 @@ public class CompressedDataViewModel : BaseViewModel
 
     #region Commands
 
+    public ICommand CopyOffsetCommand { get; }
     public ICommand CopyDataCommand { get; }
 
     #endregion
@@ -432,6 +434,11 @@ public class CompressedDataViewModel : BaseViewModel
     {
         lock (_loadLock)
             return Data ?? _dataProvider.GetData(Offset, Compression.Encoder);
+    }
+
+    public void CopyOffset()
+    {
+        Clipboard.SetText($"{Offset:X8}");
     }
 
     public void CopyData()
