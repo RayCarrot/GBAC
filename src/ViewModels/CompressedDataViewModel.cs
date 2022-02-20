@@ -123,7 +123,7 @@ public class CompressedDataViewModel : BaseViewModel
 
     public ImageSource? Map8Preview { get; set; }
     public ImageSource? Map16Preview { get; set; }
-    public int MapPreviewWidth { get; set; } = 100;
+    public int MapPreviewWidth { get; set; } = 240;
 
     #endregion
 
