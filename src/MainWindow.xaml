@@ -505,7 +505,7 @@
                                                Margin="{StaticResource Thickness.Vertical.Small}"/>
 
                                     <Image Source="{Binding Path=Tiles4Preview}"
-                                           Width="{Binding Path=TilesPreviewWidth, Converter={local:MultipleIntConverter}, ConverterParameter=2}"
+                                           Width="{Binding Path=TilesPreviewWidth, Converter={local:MultiplyIntConverter}, ConverterParameter=2}"
                                            HorizontalAlignment="Left"
                                            RenderOptions.BitmapScalingMode="NearestNeighbor"
                                            Margin="{StaticResource Thickness.Vertical.Large}" />
@@ -519,7 +519,7 @@
                                                Margin="{StaticResource Thickness.Vertical.Small}"/>
 
                                     <Image Source="{Binding Path=Tiles8Preview}"
-                                           Width="{Binding Path=TilesPreviewWidth, Converter={local:MultipleIntConverter}, ConverterParameter=2}"
+                                           Width="{Binding Path=TilesPreviewWidth, Converter={local:MultiplyIntConverter}, ConverterParameter=2}"
                                            HorizontalAlignment="Left"
                                            RenderOptions.BitmapScalingMode="NearestNeighbor"
                                            Margin="{StaticResource Thickness.Vertical.Large}" />
@@ -563,7 +563,7 @@
                                                Margin="{StaticResource Thickness.Vertical.Small}"/>
 
                                     <Image Source="{Binding Path=Map8Preview}"
-                                           Width="{Binding Path=MapPreviewWidth, Converter={local:MultipleIntConverter}, ConverterParameter=2}"
+                                           Width="{Binding Path=MapPreviewWidth, Converter={local:MultiplyIntConverter}, ConverterParameter=2}"
                                            HorizontalAlignment="Left"
                                            RenderOptions.BitmapScalingMode="NearestNeighbor"
                                            Margin="{StaticResource Thickness.Vertical.Large}" />
@@ -577,7 +577,7 @@
                                                Margin="{StaticResource Thickness.Vertical.Small}"/>
 
                                     <Image Source="{Binding Path=Map16Preview}"
-                                           Width="{Binding Path=MapPreviewWidth, Converter={local:MultipleIntConverter}, ConverterParameter=2}"
+                                           Width="{Binding Path=MapPreviewWidth, Converter={local:MultiplyIntConverter}, ConverterParameter=2}"
                                            HorizontalAlignment="Left"
                                            RenderOptions.BitmapScalingMode="NearestNeighbor"
                                            Margin="{StaticResource Thickness.Vertical.Large}" />
