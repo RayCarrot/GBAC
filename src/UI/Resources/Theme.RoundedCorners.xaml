@@ -3,7 +3,7 @@
                     xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
 
-    <!-- Copied from the Rayman Control Panel, with an added ListBox style -->
+    <!-- Copied from the Rayman Control Panel -->
     <!-- Default control styles using rounded corners. The border thickness is also increased to help with the effect. -->
 
     <CornerRadius x:Key="CornerRadius.Default">3</CornerRadius>
@@ -16,12 +16,6 @@
     <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
         <Setter Property="metro:ControlsHelper.CornerRadius" Value="{StaticResource CornerRadius.Default}" />
         <Setter Property="BorderThickness" Value="{StaticResource Thickness.Border.Default}" />
-    </Style>
-
-    <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource {x:Type ListBox}}">
-        <Setter Property="metro:ControlsHelper.CornerRadius" Value="{StaticResource CornerRadius.Default}" />
-        <Setter Property="BorderThickness" Value="{StaticResource Thickness.Border.Default}" />
-        <Setter Property="Padding" Value="2" />
     </Style>
 
     <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
