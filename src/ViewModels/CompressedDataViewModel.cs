@@ -169,11 +169,28 @@ public class CompressedDataViewModel : BaseViewModel
             if (Data == null)
                 return null;
 
-            byte[] data = Data;
-
             const int width = 16;
             const int maxHeight = 16;
             PixelFormat format = PixelFormats.Bgr555;
+
+            byte[] data = new byte[Data.Length];
+
+            // Since there is no RGB555 format we need to flip the colors to match BGR555
+            for (int i = 0; i < data.Length; i += 2)
+            {
+                int c = Data.ElementAtOrDefault(i + 1) << 8 | Data[i];
+
+                int red = BitHelpers.ExtractBits(c, 5, 0);
+                //int green = BitHelpers.ExtractBits(c, 5, 5);
+                int blue = BitHelpers.ExtractBits(c, 5, 10);
+
+                c = BitHelpers.SetBits(c, red, 5, 10);
+                //BitHelpers.SetBits(c, green, 5, 5);
+                c = BitHelpers.SetBits(c, blue, 5, 0);
+
+                data[i] = (byte)(c & 0xFF);
+                data[i + 1] = (byte)((c >> 8) & 0xFF);
+            }
 
             int mod = data.Length % (16 * 2);
 
