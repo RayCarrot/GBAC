@@ -454,11 +454,13 @@
                                            Text="Palette"
                                            Margin="{StaticResource Thickness.Vertical.Small}"/>
 
-                                <Image Source="{Binding Path=PalettePreview}"
-                                       Width="256"
-                                       HorizontalAlignment="Left"
-                                       RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                       Margin="{StaticResource Thickness.Vertical.Large}" />
+                                <ScrollViewer MaxHeight="256">
+                                    <Image Source="{Binding Path=PalettePreview}"
+                                           Width="256"
+                                           HorizontalAlignment="Left"
+                                           RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                           Margin="{StaticResource Thickness.Vertical.Large}" />
+                                </ScrollViewer>
 
                             </StackPanel>
 
