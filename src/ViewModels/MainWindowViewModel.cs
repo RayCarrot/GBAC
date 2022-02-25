@@ -25,8 +25,8 @@ public class MainWindowViewModel : BaseViewModel
         CompressionTypes = new CompressionViewModel[]
         {
             new CompressionViewModel("LZSS", new GBA_LZSSEncoder(), true, 0x10),
-            new CompressionViewModel("Huffman", new GBA_HuffmanEncoder(), false, 0x24, 0x28),
-            new CompressionViewModel("RLE", new GBA_RLEEncoder(), false, 0x30),
+            new CompressionViewModel("Huffman", new GBA_HuffmanEncoder(), true, 0x24, 0x28),
+            new CompressionViewModel("RLE", new GBA_RLEEncoder(), true, 0x30),
         };
         CompressedData = new ObservableCollection<CompressedDataViewModel>();
 

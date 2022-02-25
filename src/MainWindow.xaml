@@ -158,9 +158,17 @@
                         IsEnabled="{Binding Path=IsSearching, Converter={local:InvertedBooleanConverter}}"
                         Visibility="{Binding ElementName=AdvancedOptionsSwitch, Path=IsOn, Converter={local:BooleanToVisibilityConverter}}">
 
-                <TextBlock Style="{StaticResource TextBlock.Header}" 
-                           Text="Compression Types" 
-                           Margin="{StaticResource Thickness.Vertical.Small}"/>
+                <StackPanel Orientation="Horizontal"
+                            Margin="{StaticResource Thickness.Vertical.Small}">
+
+                    <TextBlock Style="{StaticResource TextBlock.Header}" 
+                               Text="Compression Types" 
+                               Margin="{StaticResource Thickness.Horizontal.Small}"/>
+
+                    <local:InfoIcon VerticalAlignment="Center"
+                                    Text="The compression types to use in the search. For most games it's recommended to only use LZSS as the other ones are less common." />
+
+                </StackPanel>
 
                 <ItemsControl ItemsSource="{Binding Path=CompressionTypes, Mode=OneTime}"
                               Margin="{StaticResource Thickness.Vertical.Large}">
