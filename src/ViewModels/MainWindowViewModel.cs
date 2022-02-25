@@ -387,7 +387,7 @@ public class MainWindowViewModel : BaseViewModel
     [MemberNotNull(nameof(Title))]
     public void SetTitle(string? subTitle = null)
     {
-        Title = "GBAC 1.0.0.0";
+        Title = "GBAC 1.1.0.0";
 
         if (subTitle != null)
             Title += $" - {subTitle}";
