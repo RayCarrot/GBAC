@@ -26,7 +26,12 @@
     <Authors>RayCarrot</Authors>
     <Product>GBAC</Product>
   </PropertyGroup>
-  
+
+  <!-- Release -->
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
   <!-- Fody (Debug) -->
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <WeaverConfiguration>
