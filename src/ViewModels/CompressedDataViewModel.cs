@@ -8,7 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using BinarySerializer;
-using BinarySerializer.GBA;
+using BinarySerializer.Nintendo.GBA;
 
 namespace GBAC;
 
@@ -101,7 +101,7 @@ public class CompressedDataViewModel : BaseViewModel
     public ImageSource? Tiles4Preview { get; set; }
     public ImageSource? Tiles8Preview { get; set; }
     public int TilesPreviewTileWidth { get; set; } = 2;
-    public int TilesPreviewWidth => TilesPreviewTileWidth * GBAConstants.TileSize;
+    public int TilesPreviewWidth => TilesPreviewTileWidth * Constants.TileSize;
     public uint TilesPaletteOffset
     {
         get => _tilesPaletteOffset;
@@ -221,17 +221,17 @@ public class CompressedDataViewModel : BaseViewModel
     {
         float tileSetBppFactor = tileSetBpp / 8f;
 
-        for (int y = 0; y < GBAConstants.TileSize; y++)
+        for (int y = 0; y < Constants.TileSize; y++)
         {
-            for (int x = 0; x < GBAConstants.TileSize; x++)
+            for (int x = 0; x < Constants.TileSize; x++)
             {
-                byte b = tileSet.ElementAtOrDefault((int)(tileSetOffset + (y * GBAConstants.TileSize + x) * tileSetBppFactor));
+                byte b = tileSet.ElementAtOrDefault((int)(tileSetOffset + (y * Constants.TileSize + x) * tileSetBppFactor));
 
                 if (tileSetBpp == 4)
                     b = (byte)BitHelpers.ExtractBits(b, 4, x % 2 == 0 ? 0 : 4);
 
-                var sourceTileX = flipX ? GBAConstants.TileSize - x - 1 : x;
-                var sourceTileY = flipY ? GBAConstants.TileSize - y - 1 : y;
+                var sourceTileX = flipX ? Constants.TileSize - x - 1 : x;
+                var sourceTileY = flipY ? Constants.TileSize - y - 1 : y;
 
                 // Ignore transparent pixels
                 if (b == 0)
@@ -254,7 +254,7 @@ public class CompressedDataViewModel : BaseViewModel
             float bppFactor = bpp / 8f;
 
             // Get the length of each tile in bytes
-            int tileLength = (int)(GBAConstants.TileSize * GBAConstants.TileSize * bppFactor);
+            int tileLength = (int)(Constants.TileSize * Constants.TileSize * bppFactor);
 
             // Calculate the height
             int height = (int)Math.Ceiling(Data.Length / (float)width / tileLength) * tileLength;
@@ -263,8 +263,8 @@ public class CompressedDataViewModel : BaseViewModel
                 return null;
 
             // Get the tile dimensions
-            int tilesWidth = width / GBAConstants.TileSize;
-            int tilesHeight = height / GBAConstants.TileSize;
+            int tilesWidth = width / Constants.TileSize;
+            int tilesHeight = height / Constants.TileSize;
             int stride = GetStride(width, format);
 
             // Create a dummy palette if none is given
@@ -279,11 +279,11 @@ public class CompressedDataViewModel : BaseViewModel
             // Enumerate every tile
             for (int tileY = 0; tileY < tilesHeight; tileY++)
             {
-                int absTileY = tileY * GBAConstants.TileSize;
+                int absTileY = tileY * Constants.TileSize;
 
                 for (int tileX = 0; tileX < tilesWidth; tileX++)
                 {
-                    int absTileX = tileX * GBAConstants.TileSize;
+                    int absTileX = tileX * Constants.TileSize;
 
                     int tileIndex = tileY * tilesWidth + tileX;
 

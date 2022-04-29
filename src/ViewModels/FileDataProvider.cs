@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using BinarySerializer.GBA;
+using BinarySerializer.Nintendo.GBA;
 
 namespace GBAC;
 
@@ -40,7 +40,7 @@ public class FileDataProvider
         }
     }
 
-    public byte[] GetData(uint offset, GBA_Encoder encoder)
+    public byte[] GetData(uint offset, BaseEncoder encoder)
     {
         if (!IsOffsetValid(offset))
             throw new ArgumentException($"Invalid offset {offset}", nameof(offset));

@@ -68,7 +68,7 @@
 
   <!-- Project references -->
   <ItemGroup>
-    <ProjectReference Include="..\submodules\BinarySerializer.GBA\src\BinarySerializer.GBA.csproj" />
+    <ProjectReference Include="..\submodules\BinarySerializer.Nintendo\src\BinarySerializer.Nintendo.csproj" />
     <ProjectReference Include="..\submodules\BinarySerializer\src\BinarySerializer.csproj" />
   </ItemGroup>
 

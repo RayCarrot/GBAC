@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
-using BinarySerializer.GBA;
+using BinarySerializer.Nintendo.GBA;
 
 namespace GBAC;
 
@@ -20,13 +20,13 @@ public class MainWindowViewModel : BaseViewModel
         Message = messageService;
         Browse = browseService;
 
-        FileOffset = GBAConstants.Address_ROM;
+        FileOffset = Constants.Address_ROM;
 
         CompressionTypes = new CompressionViewModel[]
         {
-            new CompressionViewModel("LZSS", new GBA_LZSSEncoder(), true, 0x10),
-            new CompressionViewModel("Huffman", new GBA_HuffmanEncoder(), true, 0x24, 0x28),
-            new CompressionViewModel("RLE", new GBA_RLEEncoder(), true, 0x30),
+            new CompressionViewModel("LZSS", new LZSSEncoder(), true, 0x10),
+            new CompressionViewModel("Huffman", new HuffmanEncoder(), true, 0x24, 0x28),
+            new CompressionViewModel("RLE", new RLEEncoder(), true, 0x30),
         };
         CompressedData = new ObservableCollection<CompressedDataViewModel>();
 
