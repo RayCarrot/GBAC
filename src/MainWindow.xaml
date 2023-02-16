@@ -109,6 +109,7 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <Button Grid.Column="0"
@@ -135,6 +136,15 @@
                                   Margin="{StaticResource Thickness.Horizontal.Large}" />
 
                 <Button Grid.Column="4"
+                        Content="Export" 
+                        ToolTip="Exports the results"
+                        ContentTemplate="{StaticResource Button.IconContentTemplate}"
+                        local:ButtonAssist.IconKind="Export"
+                        Visibility="{Binding Path=IsSearching, Converter={local:InvertedBooleanToVisibilityConverter}}"
+                        Command="{Binding Path=ExportDataCommand, Mode=OneTime}"
+                        Margin="{StaticResource Thickness.Horizontal.Largest}"/>
+
+                <Button Grid.Column="5"
                         Content="Clear" 
                         ToolTip="Clears the list of found compressed data"
                         ContentTemplate="{StaticResource Button.IconContentTemplate}"
@@ -143,7 +153,7 @@
                         Command="{Binding Path=ClearDataCommand, Mode=OneTime}"
                         Margin="{StaticResource Thickness.Horizontal.Large}"/>
 
-                <Button Grid.Column="5"
+                <Button Grid.Column="6"
                         Content="Unload File" 
                         ToolTip="Unloads the file and allows a new file to be loaded"
                         ContentTemplate="{StaticResource Button.IconContentTemplate}"

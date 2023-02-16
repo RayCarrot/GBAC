@@ -37,6 +37,7 @@ public class MainWindowViewModel : BaseViewModel
         UnloadFileCommand = new RelayCommand(UnloadFile);
         SearchCommand = new AsyncRelayCommand(SearchAsync);
         StopSearchCommand = new RelayCommand(StopSearch);
+        ExportDataCommand = new RelayCommand(ExportData);
         ClearDataCommand = new RelayCommand(ClearData);
         FindBytesCommand = new RelayCommand(FindBytes);
 
@@ -59,6 +60,7 @@ public class MainWindowViewModel : BaseViewModel
     public ICommand UnloadFileCommand { get; }
     public ICommand SearchCommand { get; }
     public ICommand StopSearchCommand { get; }
+    public ICommand ExportDataCommand { get; }
     public ICommand ClearDataCommand { get; }
     public ICommand FindBytesCommand { get; }
 
@@ -318,6 +320,45 @@ public class MainWindowViewModel : BaseViewModel
     public void StopSearch()
     {
         CancelSearch = true;
+    }
+
+    public void ExportData()
+    {
+        string? filePath = Browse.SaveFile("Export results", $"{Path.GetFileName(FilePath)}.csv", filter: "CSV (*.csv)|*.csv");
+
+        if (filePath == null)
+            return;
+
+        try
+        {
+            using StreamWriter writer = new(filePath);
+            
+            void write(string value) => writer.Write($"{value},");
+            void writeHex(uint value) => writer.Write($"{value:X8},");
+
+            // Header
+            write("Offset");
+            write("Compression");
+            write("Compressed Length");
+            write("Decompressed Length");
+            write("References");
+            writer.WriteLine();
+
+            foreach (CompressedDataViewModel data in CompressedData)
+            {
+                writeHex(data.Offset);
+                write(data.Compression.DisplayName);
+                writeHex(data.CompressedLength);
+                writeHex(data.DecompressedLength);
+                write(data.ReferencesCount.ToString());
+                
+                writer.WriteLine();
+            }
+        }
+        catch (Exception ex)
+        {
+            Message.DisplayEception(ex, "An error occurred when exporting the data");
+        }
     }
 
     public void ClearData()

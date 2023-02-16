@@ -21,14 +21,14 @@ public class BrowseService
         return dialog.FileName;
     }
 
-    public string? SaveFile(string header, string defaultFileName)
+    public string? SaveFile(string header, string defaultFileName, string filter = "All Files (*.*)|*.*")
     {
         SaveFileDialog dialog = new()
         {
             Title = header,
             OverwritePrompt = true,
             FileName = defaultFileName,
-            Filter = "All Files (*.*)|*.*"
+            Filter = filter
         };
 
         bool? result = dialog.ShowDialog();
